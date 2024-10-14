@@ -165,7 +165,7 @@ function displayUserResults(users) {
                     repoContainer.innerHTML = '';
                     repoContainer.classList.toggle('hidden');
                     repos.forEach(repo => {
-                        repoContainer.innerHTML += `<p><a href="${repo.html_url}" target="_blank">${repo.name}</a></p>`;
+                        repoContainer.innerHTML += `<p><a href="${repo.html_url}" target="_blank"><span class="material-icons">code</span> ${repo.name}</a></p>`;
                     });
                 });
         });
@@ -213,3 +213,4 @@ function loadFeaturedRepos() {
 
 // Load featured repos on page load
 loadFeaturedRepos();
+                    
