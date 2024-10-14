@@ -39,140 +39,73 @@ body.dark-mode {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* Quick Access Section (Expanding Search and Theme Toggle) */
-.quick-access {
+/* Buttons (Report Bug and View Code) */
+.header-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
     display: flex;
     align-items: center;
-}
-
-.expand-search {
-    position: relative;
-}
-
-.expand-search #expand-search-icon {
-    font-size: 28px;
     color: white;
-    cursor: pointer;
-}
-
-.expand-search input {
-    position: absolute;
-    right: 0;
-    top: -5px;
-    width: 0;
-    padding: 10px;
-    border: none;
-    border-radius: var(--border-radius);
-    opacity: 0;
-    transition: all 0.3s ease;
     background-color: var(--primary-color);
-    color: white;
+    padding: 10px 15px;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    transition: background-color 0.3s ease;
 }
 
-.expand-search input.show {
-    width: 200px;
-    opacity: 1;
-    padding-left: 10px;
+.btn:hover {
+    background-color: var(--secondary-color);
 }
 
-.theme-switcher .material-icons {
-    font-size: 28px;
-    color: white;
-    margin-left: 15px;
-    cursor: pointer;
+.btn .material-icons {
+    margin-right: 5px;
 }
 
-/* Adjust spacing for search and filters */
-.search-bar {
+/* Filters Section with Icons */
+.filters label {
     display: flex;
-    justify-content: center;
     align-items: center;
-    margin-top: 60px; /* Adjusted to avoid overlap with navbar */
-    margin-bottom: 20px;
+    gap: 5px;
 }
 
-.search-bar select,
-.search-bar input {
+.filters select,
+.filters input {
     padding: 10px;
-    margin: 0 10px;
     border-radius: var(--border-radius);
     border: 1px solid #ccc;
-    font-size: 16px;
+    margin-right: 15px;
+    background-color: white;
+    transition: background-color 0.3s ease;
 }
 
-.search-bar button {
-    background-color: var(--secondary-color);
-    border: none;
-    padding: 10px;
-    border-radius: var(--border-radius);
-    cursor: pointer;
+body.dark-mode .filters select,
+body.dark-mode .filters input {
+    background-color: #333;
     color: white;
-    display: flex;
-    align-items: center;
 }
 
-.filters {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-/* Results Section */
-.results, .featured {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-}
-
+/* Dark mode text in boxes */
 .result-item, .featured-item {
     background-color: white;
     padding: 20px;
     border-radius: var(--border-radius);
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s;
+    transition: transform 0.2s, background-color 0.3s;
+}
+
+body.dark-mode .result-item, body.dark-mode .featured-item {
+    background-color: #333;
+    color: #f5f5f5;
 }
 
 .result-item:hover, .featured-item:hover {
-    transform: translateY(-5px);
+    transform: translateY(-2px); /* Reduced hover animation */
 }
 
-/* Fix featured repos showing twice */
-.featured h2 {
-    margin-bottom: 20px;
-}
-
-/* Mobile responsiveness */
-@media (max-width: 768px) {
-    .results, .featured {
-        grid-template-columns: 1fr; /* Stack results on mobile */
-    }
-
-    .search-bar {
-        flex-direction: column;
-    }
-
-    .filters {
-        flex-direction: column;
-        align-items: center;
-    }
-}
-
-/* Footer */
-footer {
-    padding: 20px;
-    text-align: center;
-}
-
-#footer-description {
-    color: #888;
-}
-
-body.dark-mode #footer-description {
-    color: #ccc;
-}
-
+/* Footer Links */
 footer a {
     color: var(--primary-color);
     text-decoration: none;
