@@ -2,7 +2,6 @@
 const themeIcon = document.getElementById('theme-icon');
 const searchButton = document.getElementById('searchButton');
 const searchInput = document.getElementById('searchInput');
-const quickSearchInput = document.getElementById('quickSearchInput');
 const expandSearchIcon = document.getElementById('expand-search-icon');
 const resultsContainer = document.getElementById('results');
 const featuredContainer = document.getElementById('featured');
@@ -11,13 +10,9 @@ const languageFilter = document.getElementById('languageFilter');
 const popularityFilter = document.getElementById('popularityFilter');
 const licenseFilter = document.getElementById('licenseFilter');
 const dateFilter = document.getElementById('dateFilter');
-const prevPageButton = document.getElementById('prevPage');
-const nextPageButton = document.getElementById('nextPage');
 const gitboardTitle = document.getElementById('gitboard-title');
 const loadingBar = document.getElementById('loadingBar');
 const loadingBarContainer = document.getElementById('loadingBarContainer');
-let currentPage = 1;
-let totalPages = 1;
 
 // Load Theme
 document.body.classList.toggle('dark-mode', localStorage.getItem('darkMode') === 'true');
@@ -34,21 +29,20 @@ function updateThemeIcon() {
     themeIcon.textContent = document.body.classList.contains('dark-mode') ? 'dark_mode' : 'light_mode';
 }
 
-// Expanding Search Box Logic
-expandSearchIcon.addEventListener('click', () => {
-    quickSearchInput.classList.toggle('show');
-    quickSearchInput.focus();
-});
-
 // GitBoard Title Click (Reset search and filters)
 gitboardTitle.addEventListener('click', () => {
     searchInput.value = '';
-    languageFilter.value = '';
-    popularityFilter.value = 'stars';
-    licenseFilter.value = '';
+    languageFilter.value = 'none';
+    popularityFilter.value = 'none';
+    licenseFilter.value = 'none';
     dateFilter.value = '';
     resultsContainer.innerHTML = '';
     loadFeaturedRepos();
+});
+
+// Search Icon Behavior (move cursor to search bar)
+expandSearchIcon.addEventListener('click', () => {
+    searchInput.focus();
 });
 
 // Search Event Listeners
@@ -56,43 +50,128 @@ searchButton.addEventListener('click', () => executeSearch());
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') executeSearch();
 });
-quickSearchInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        searchInput.value = quickSearchInput.value; // Sync with main search input
-        executeSearch();
-    }
-});
 
 function executeSearch() {
     const query = searchInput.value.trim();
-    const language = languageFilter.value;
-    const popularity = popularityFilter.value;
-    const license = licenseFilter.value;
-    const date = dateFilter.value;
+    const type = searchType.value;
     
     if (!query) return;
     
-    let url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}`;
+    if (type === 'repo') {
+        searchRepos(query);
+    } else {
+        searchUsers(query);
+    }
+}
+
+// Repo Search Functionality
+function searchRepos(query) {
+    const language = languageFilter.value !== 'none' ? languageFilter.value : '';
+    const popularity = popularityFilter.value !== 'none' ? popularityFilter.value : '';
+    const license = licenseFilter.value !== 'none' ? licenseFilter.value : '';
+    const date = dateFilter.value;
     
+    let url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}`;
     if (language) url += `+language:${encodeURIComponent(language)}`;
     if (license) url += `+license:${encodeURIComponent(license)}`;
     if (date) url += `+created:>${date}`;
-    url += `&sort=${popularity}&order=desc`;
-    
+    if (popularity) url += `&sort=${popularity}&order=desc`;
+
     showLoadingBar();
     
     fetch(url)
         .then(res => res.json())
         .then(data => {
             hideLoadingBar();
-            displayResults(data.items);
-            totalPages = Math.ceil(data.items.length / 30);
-            updatePagination();
+            displayRepoResults(data.items);
         })
         .catch(err => {
             console.error('GitHub API error:', err);
             hideLoadingBar();
         });
+}
+
+// Display Repo Results
+function displayRepoResults(results) {
+    resultsContainer.innerHTML = '';
+    if (!results || results.length === 0) {
+        resultsContainer.innerHTML = '<p>No results found.</p>';
+        return;
+    }
+
+    results.forEach(result => {
+        const item = document.createElement('div');
+        item.className = 'result-item';
+        
+        // GitHub Pages Link (if available)
+        let pagesLink = '';
+        if (result.has_pages && result.homepage) {
+            pagesLink = `<a href="${result.homepage}" target="_blank" class="button">View GitHub Pages</a>`;
+        }
+        
+        item.innerHTML = `
+            <h3>${result.name}</h3>
+            <p>${result.description || 'No description available'}</p>
+            <p><strong>Owner:</strong> ${result.owner.login}</p>
+            <p><strong>Stars:</strong> ${result.stargazers_count}, <strong>Forks:</strong> ${result.forks_count}, <strong>Watchers:</strong> ${result.watchers_count}</p>
+            <a href="${result.html_url}" target="_blank" class="button">View Repo on GitHub</a>
+            ${pagesLink}
+        `;
+        resultsContainer.appendChild(item);
+    });
+}
+
+// User Search Functionality
+function searchUsers(query) {
+    showLoadingBar();
+
+    fetch(`https://api.github.com/search/users?q=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(data => {
+            hideLoadingBar();
+            displayUserResults(data.items);
+        })
+        .catch(err => {
+            console.error('GitHub API error:', err);
+            hideLoadingBar();
+        });
+}
+
+// Display User Results with Repo Links
+function displayUserResults(users) {
+    resultsContainer.innerHTML = '';
+    if (!users || users.length === 0) {
+        resultsContainer.innerHTML = '<p>No users found.</p>';
+        return;
+    }
+
+    users.forEach(user => {
+        const item = document.createElement('div');
+        item.className = 'result-item';
+        
+        item.innerHTML = `
+            <h3>${user.login}</h3>
+            <a href="${user.html_url}" target="_blank" class="button">View Profile on GitHub</a>
+            <button class="expand-repos">Show Repos</button>
+            <div class="user-repos hidden"></div>
+        `;
+        
+        // Add functionality to load user repos
+        item.querySelector('.expand-repos').addEventListener('click', () => {
+            fetch(`https://api.github.com/users/${user.login}/repos`)
+                .then(res => res.json())
+                .then(repos => {
+                    const repoContainer = item.querySelector('.user-repos');
+                    repoContainer.innerHTML = '';
+                    repoContainer.classList.toggle('hidden');
+                    repos.forEach(repo => {
+                        repoContainer.innerHTML += `<p><a href="${repo.html_url}" target="_blank">${repo.name}</a></p>`;
+                    });
+                });
+        });
+        
+        resultsContainer.appendChild(item);
+    });
 }
 
 // Show and Hide Loading Bar
@@ -109,57 +188,12 @@ function hideLoadingBar() {
     }, 500);
 }
 
-// Display Repositories with Pagination
-function displayResults(results) {
-    resultsContainer.innerHTML = '';
-    if (!results || results.length === 0) {
-        resultsContainer.innerHTML = '<p>No results found.</p>';
-        return;
-    }
-
-    results.slice((currentPage - 1) * 30, currentPage * 30).forEach(result => {
-        const item = document.createElement('div');
-        item.className = 'result-item';
-        item.innerHTML = `
-            <h3>${result.name}</h3>
-            <p>${result.description || 'No description available'}</p>
-            <p><strong>Owner:</strong> ${result.owner.login}</p>
-            <p><strong>Stars:</strong> ${result.stargazers_count}, <strong>Forks:</strong> ${result.forks_count}, <strong>Watchers:</strong> ${result.watchers_count}</p>
-            <a href="${result.html_url}" target="_blank" class="button">View Repo on GitHub</a>
-        `;
-        resultsContainer.appendChild(item);
-    });
-}
-
-// Pagination Update and Event Handlers
-function updatePagination() {
-    document.getElementById('currentPage').textContent = currentPage;
-    document.getElementById('totalPages').textContent = totalPages;
-    
-    prevPageButton.classList.toggle('hidden', currentPage === 1);
-    nextPageButton.classList.toggle('hidden', currentPage >= totalPages);
-}
-
-prevPageButton.addEventListener('click', () => {
-    if (currentPage > 1) {
-        currentPage--;
-        executeSearch();
-    }
-});
-
-nextPageButton.addEventListener('click', () => {
-    if (currentPage < totalPages) {
-        currentPage++;
-        executeSearch();
-    }
-});
-
-// Featured Repos - Most Visited and Recently Created
+// Load Featured Repos
 function loadFeaturedRepos() {
     fetch('https://api.github.com/repositories')
         .then(res => res.json())
         .then(data => {
-            featuredContainer.innerHTML = ''; // Clear any previous featured repos
+            featuredContainer.innerHTML = ''; // Clear previous featured repos
             const mostVisited = data.slice(0, 3);  // Mock for "most visited"
             const recentlyCreated = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 3);
             
