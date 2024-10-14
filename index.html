@@ -21,9 +21,18 @@
             <span class="material-icons">bug_report</span> Report Bug
         </a>
 
-        <!-- Theme Switcher -->
-        <div class="theme-switcher">
-            <span class="material-icons" id="theme-icon">light_mode</span>
+        <!-- Expanding Search Icon and Theme Switcher -->
+        <div class="quick-access">
+            <!-- Expanding Search Box -->
+            <div class="expand-search">
+                <span class="material-icons" id="expand-search-icon">search</span>
+                <input type="text" id="quickSearchInput" class="hidden" placeholder="Quick Search...">
+            </div>
+
+            <!-- Theme Switcher -->
+            <div class="theme-switcher">
+                <span class="material-icons" id="theme-icon">light_mode</span>
+            </div>
         </div>
     </header>
 
@@ -33,7 +42,7 @@
             <div id="loadingBar" class="loading-bar"></div>
         </div>
 
-        <!-- Search Bar -->
+        <!-- Search Bar (moved down) -->
         <div class="search-bar">
             <select id="searchType">
                 <option value="repo">Repos</option>
@@ -45,23 +54,16 @@
 
         <!-- Filters Section -->
         <div id="filters" class="filters">
-            <!-- Language Filter as Dropdown -->
             <label for="languageFilter">Language:</label>
             <select id="languageFilter">
                 <option value="">All Languages</option>
                 <option value="JavaScript">JavaScript</option>
                 <option value="Python">Python</option>
-                <option value="Java">Java</option>
-                <option value="Ruby">Ruby</option>
-                <option value="Go">Go</option>
-                <option value="PHP">PHP</option>
-                <option value="C++">C++</option>
                 <option value="HTML">HTML</option>
                 <option value="CSS">CSS</option>
                 <!-- Add more languages as needed -->
             </select>
 
-            <!-- Popularity Filter -->
             <label for="popularityFilter">Sort by:</label>
             <select id="popularityFilter">
                 <option value="stars">Stars</option>
@@ -69,17 +71,14 @@
                 <option value="watchers">Watchers</option>
             </select>
 
-            <!-- License Filter -->
             <label for="licenseFilter">License:</label>
             <select id="licenseFilter">
                 <option value="">All Licenses</option>
                 <option value="mit">MIT License</option>
                 <option value="gpl">GPL License</option>
                 <option value="apache">Apache License</option>
-                <!-- Add more licenses as needed -->
             </select>
 
-            <!-- Date Filter -->
             <label for="dateFilter">Created After:</label>
             <input type="date" id="dateFilter">
         </div>
@@ -106,10 +105,13 @@
         </div>
     </main>
 
-    <!-- Footer with Description -->
+    <!-- Footer with Source Code Links -->
     <footer>
         <p id="footer-description">
             GitBoard helps you discover GitHub repositories and users with ease. Search for trending repos, explore users, and check out the most popular projects in the GitHub community.
+        </p>
+        <p>
+            View source on <a href="https://github.com/155601-Mikey/GitBoard" target="_blank">GitHub</a>.
         </p>
     </footer>
 
