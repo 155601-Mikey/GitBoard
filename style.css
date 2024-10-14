@@ -64,12 +64,41 @@ body.dark-mode {
     margin-right: 5px;
 }
 
+/* Search Bar Styling */
+.search-bar {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.search-type, .search-input, .search-button {
+    padding: 10px;
+    border-radius: var(--border-radius);
+    border: 1px solid #ccc;
+    margin: 0 10px;
+    font-size: 16px;
+}
+
+.search-button {
+    background-color: var(--secondary-color);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-button:hover {
+    background-color: var(--primary-color);
+}
+
 /* Filters Section with Icons (side-by-side layout) */
 .filters {
     display: flex;
     justify-content: space-between;
     gap: 20px;
     flex-wrap: wrap;
+    margin-top: 20px;
 }
 
 .filters label {
@@ -78,8 +107,7 @@ body.dark-mode {
     gap: 5px;
 }
 
-.filters select,
-.filters input {
+.filters select, .filters input {
     padding: 10px;
     border-radius: var(--border-radius);
     border: 1px solid #ccc;
@@ -87,8 +115,7 @@ body.dark-mode {
     transition: background-color 0.3s ease;
 }
 
-body.dark-mode .filters select,
-body.dark-mode .filters input {
+body.dark-mode .filters select, body.dark-mode .filters input {
     background-color: #333;
     color: white;
 }
@@ -138,8 +165,15 @@ body.dark-mode .result-item, body.dark-mode .featured-item {
 }
 
 /* Footer Links */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: var(--primary-color);
+    color: white;
+}
+
 footer a {
-    color: var(--primary-color);
+    color: white;
     text-decoration: none;
 }
 
