@@ -7,9 +7,13 @@ const featuredContainer = document.getElementById('featured');
 const searchType = document.getElementById('searchType');
 const languageFilter = document.getElementById('languageFilter');
 const popularityFilter = document.getElementById('popularityFilter');
+const licenseFilter = document.getElementById('licenseFilter');
+const dateFilter = document.getElementById('dateFilter');
 const prevPageButton = document.getElementById('prevPage');
 const nextPageButton = document.getElementById('nextPage');
 const gitboardTitle = document.getElementById('gitboard-title');
+const loadingBar = document.getElementById('loadingBar');
+const loadingBarContainer = document.getElementById('loadingBarContainer');
 let currentPage = 1;
 let currentSearchType = 'repo';
 let totalPages = 1;
@@ -34,6 +38,8 @@ gitboardTitle.addEventListener('click', () => {
     searchInput.value = '';
     languageFilter.value = '';
     popularityFilter.value = 'stars';
+    licenseFilter.value = '';
+    dateFilter.value = '';
     resultsContainer.innerHTML = '';
     loadFeaturedRepos();
 });
@@ -48,22 +54,46 @@ function executeSearch() {
     const query = searchInput.value.trim();
     const language = languageFilter.value;
     const popularity = popularityFilter.value;
+    const license = licenseFilter.value;
+    const date = dateFilter.value;
     
     if (!query) return;
     
     let url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}`;
     
     if (language) url += `+language:${encodeURIComponent(language)}`;
+    if (license) url += `+license:${encodeURIComponent(license)}`;
+    if (date) url += `+created:>${date}`;
     url += `&sort=${popularity}&order=desc`;
+    
+    showLoadingBar();
     
     fetch(url)
         .then(res => res.json())
         .then(data => {
+            hideLoadingBar();
             displayResults(data.items);
             totalPages = Math.ceil(data.items.length / 30);
             updatePagination();
         })
-        .catch(err => console.error('GitHub API error:', err));
+        .catch(err => {
+            console.error('GitHub API error:', err);
+            hideLoadingBar();
+        });
+}
+
+// Show and Hide Loading Bar
+function showLoadingBar() {
+    loadingBarContainer.classList.remove('hidden');
+    loadingBar.style.width = '0%';
+    setTimeout(() => loadingBar.style.width = '100%', 100);
+}
+
+function hideLoadingBar() {
+    setTimeout(() => {
+        loadingBarContainer.classList.add('hidden');
+        loadingBar.style.width = '0%';
+    }, 500);
 }
 
 // Display Repositories with Pagination
@@ -90,6 +120,9 @@ function displayResults(results) {
 
 // Pagination Update and Event Handlers
 function updatePagination() {
+    document.getElementById('currentPage').textContent = currentPage;
+    document.getElementById('totalPages').textContent = totalPages;
+    
     prevPageButton.classList.toggle('hidden', currentPage === 1);
     nextPageButton.classList.toggle('hidden', currentPage >= totalPages);
 }
