@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitHub Repo & Account Search</title>
-    <!-- Google Fonts or Custom Fonts -->
+    <!-- Google Fonts for Material Icons and Custom Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <!-- Icons (FontAwesome) -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- CSS Styles -->
     <link rel="stylesheet" href="style.css">
 </head>
@@ -15,15 +14,15 @@
     <header class="navbar">
         <h1>RepoFinder</h1>
         <div class="theme-switcher">
-            <i class="fas fa-sun" id="light-icon"></i>
-            <i class="fas fa-moon" id="dark-icon"></i>
+            <span class="material-icons" id="light-icon">light_mode</span>
+            <span class="material-icons" id="dark-icon">dark_mode</span>
         </div>
     </header>
 
     <main class="container">
         <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Search for GitHub repos or users...">
-            <button id="searchButton"><i class="fas fa-search"></i></button>
+            <input type="text" id="searchInput" placeholder="Search GitHub repos or users...">
+            <button id="searchButton"><span class="material-icons">search</span></button>
         </div>
 
         <section id="results" class="results">
