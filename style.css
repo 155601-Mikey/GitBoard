@@ -26,20 +26,13 @@ body.dark-mode {
     --text-color: #f5f5f5;
 }
 
-/* Glossy Navbar */
-.navbar.glossy {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
+/* Sticky Navbar */
+.navbar.glossy.sticky {
+    position: sticky;
+    top: 0;
+    z-index: 100;
     background: linear-gradient(145deg, rgba(0, 123, 255, 0.9), rgba(0, 255, 195, 0.9));
-    border-radius: var(--border-radius);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-.navbar h1 {
-    font-size: 24px;
-    color: white;
 }
 
 /* Theme Switcher */
@@ -86,6 +79,7 @@ body.dark-mode {
     align-items: center;
 }
 
+/* Filters Section */
 .filters {
     display: flex;
     justify-content: center;
@@ -93,18 +87,49 @@ body.dark-mode {
     margin-bottom: 20px;
 }
 
-/* Results and Featured Repos */
-.results, .featured {
+/* Results Section */
+.results {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
 }
 
+/* Separator */
+.separator {
+    margin: 40px 0;
+    border: none;
+    height: 1px;
+    background: #ccc;
+}
+
+/* Featured Repos */
+.featured {
+    margin-top: 20px;
+}
+
+.featured h2 {
+    margin-bottom: 20px;
+}
+
+/* Result and Featured Repo Cards */
 .result-item, .featured-item {
     background-color: white;
     padding: 20px;
     border-radius: var(--border-radius);
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.result-item .button, .featured-item .button {
+    background-color: var(--primary-color);
+    border: none;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    color: white;
+    cursor: pointer;
+    display: inline-block;
+    text-align: center;
+    margin-top: 10px;
+    text-decoration: none;
 }
 
 body.dark-mode .result-item, body.dark-mode .featured-item {
@@ -119,11 +144,6 @@ body.dark-mode .result-item, body.dark-mode .featured-item {
     margin-top: 20px;
 }
 
-.hidden {
-    display: none;
-}
-
-/* Buttons */
 .pagination button {
     padding: 10px;
     background-color: var(--primary-color);
@@ -131,4 +151,23 @@ body.dark-mode .result-item, body.dark-mode .featured-item {
     border: none;
     margin: 0 10px;
     cursor: pointer;
+    border-radius: var(--border-radius);
+}
+
+.hidden {
+    display: none;
+}
+
+/* Footer */
+footer {
+    padding: 20px;
+    text-align: center;
+}
+
+#footer-description {
+    color: #888;
+}
+
+body.dark-mode #footer-description {
+    color: #ccc;
 }
