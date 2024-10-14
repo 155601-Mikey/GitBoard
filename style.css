@@ -14,15 +14,15 @@ body {
 
 /* Color variables for light and dark mode */
 :root {
-    --background-color: #f5f5f5;
+    --background-color: #fdfdfd;
     --text-color: #333;
-    --primary-color: #ff6347;  /* Tomato */
-    --secondary-color: #ffcc00; /* Happy yellow */
+    --primary-color: #4fc3f7;  /* Light Blue */
+    --secondary-color: #81c784; /* Light Green */
     --border-radius: 15px;
 }
 
 body.dark-mode {
-    --background-color: #1a1a1a;
+    --background-color: #121212;
     --text-color: #f5f5f5;
 }
 
@@ -48,8 +48,8 @@ body.dark-mode {
     align-items: center;
 }
 
-.theme-switcher i {
-    font-size: 20px;
+.theme-switcher .material-icons {
+    font-size: 24px;
     color: white;
     margin: 0 10px;
     transition: opacity 0.3s;
@@ -90,6 +90,13 @@ body.dark-mode {
     cursor: pointer;
     color: white;
     font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+
+.search-bar .material-icons {
+    font-size: 20px;
+    margin-right: 5px;
 }
 
 /* Results Section */
