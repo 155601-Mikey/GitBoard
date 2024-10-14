@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Repo & Account Search</title>
-    <!-- Google Fonts for Material Icons and Custom Fonts -->
+    <title>GitBoard - Discover GitHub Repos & Users</title>
+    <!-- Google Fonts and Material Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!-- CSS Styles -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header class="navbar">
-        <h1>RepoFinder</h1>
+    <header class="navbar glossy">
+        <h1>GitBoard</h1>
         <div class="theme-switcher">
             <span class="material-icons" id="light-icon">light_mode</span>
             <span class="material-icons" id="dark-icon">dark_mode</span>
@@ -21,13 +21,39 @@
 
     <main class="container">
         <div class="search-bar">
+            <select id="searchType">
+                <option value="repo">Repos</option>
+                <option value="user">Users</option>
+            </select>
             <input type="text" id="searchInput" placeholder="Search GitHub repos or users...">
             <button id="searchButton"><span class="material-icons">search</span></button>
         </div>
 
+        <!-- Filters Section -->
+        <div id="filters" class="filters">
+            <label for="languageFilter">Language:</label>
+            <input type="text" id="languageFilter" placeholder="e.g., JavaScript, Python">
+            <label for="starsFilter">Stars >:</label>
+            <input type="number" id="starsFilter" placeholder="Min stars">
+            <label for="forksFilter">Forks >:</label>
+            <input type="number" id="forksFilter" placeholder="Min forks">
+        </div>
+
+        <section id="featured" class="featured">
+            <h2>Featured Repos</h2>
+            <!-- Featured repos will be added dynamically -->
+        </section>
+
         <section id="results" class="results">
             <!-- Search results will be displayed here -->
         </section>
+
+        <!-- Pagination Section -->
+        <div id="pagination" class="pagination">
+            <button id="prevPage" class="hidden">Previous</button>
+            <span id="currentPage">1</span>
+            <button id="nextPage" class="hidden">Next</button>
+        </div>
     </main>
 
     <!-- JavaScript File -->
