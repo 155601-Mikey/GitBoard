@@ -64,7 +64,14 @@ body.dark-mode {
     margin-right: 5px;
 }
 
-/* Filters Section with Icons */
+/* Filters Section with Icons (side-by-side layout) */
+.filters {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
 .filters label {
     display: flex;
     align-items: center;
@@ -76,7 +83,6 @@ body.dark-mode {
     padding: 10px;
     border-radius: var(--border-radius);
     border: 1px solid #ccc;
-    margin-right: 15px;
     background-color: white;
     transition: background-color 0.3s ease;
 }
@@ -93,7 +99,7 @@ body.dark-mode .filters input {
     padding: 20px;
     border-radius: var(--border-radius);
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, background-color 0.3s;
+    transition: transform 0.3s ease, background-color 0.3s;
 }
 
 body.dark-mode .result-item, body.dark-mode .featured-item {
@@ -102,7 +108,7 @@ body.dark-mode .result-item, body.dark-mode .featured-item {
 }
 
 .result-item:hover, .featured-item:hover {
-    transform: translateY(-2px); /* Reduced hover animation */
+    transform: translateY(-4px); /* Slight hover effect (flying) */
 }
 
 .button {
@@ -118,6 +124,17 @@ body.dark-mode .result-item, body.dark-mode .featured-item {
 
 .button:hover {
     background-color: var(--secondary-color);
+}
+
+/* Stat Icons with • Separators */
+.stats {
+    display: flex;
+    gap: 8px;
+    color: var(--primary-color);
+}
+
+.stats span {
+    font-weight: bold;
 }
 
 /* Footer Links */
