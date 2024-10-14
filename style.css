@@ -39,7 +39,7 @@ body.dark-mode {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* Buttons (Report Bug and View Code) */
+/* Buttons (Report Bug) */
 .header-buttons {
     display: flex;
     gap: 15px;
@@ -105,6 +105,21 @@ body.dark-mode .result-item, body.dark-mode .featured-item {
     transform: translateY(-2px); /* Reduced hover animation */
 }
 
+.button {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: var(--secondary-color);
+}
+
 /* Footer Links */
 footer a {
     color: var(--primary-color);
@@ -113,4 +128,20 @@ footer a {
 
 footer a:hover {
     text-decoration: underline;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .results, .featured {
+        grid-template-columns: 1fr; /* Stack results on mobile */
+    }
+
+    .search-bar {
+        flex-direction: column;
+    }
+
+    .filters {
+        flex-direction: column;
+        align-items: center;
+    }
 }
