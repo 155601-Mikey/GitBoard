@@ -1,32 +1,44 @@
-const lightIcon = document.getElementById('light-icon');
-const darkIcon = document.getElementById('dark-icon');
+// DOM Elements
+const themeIcon = document.getElementById('theme-icon');
 const searchButton = document.getElementById('searchButton');
 const searchInput = document.getElementById('searchInput');
 const resultsContainer = document.getElementById('results');
 const featuredContainer = document.getElementById('featured');
 const searchType = document.getElementById('searchType');
 const languageFilter = document.getElementById('languageFilter');
-const starsFilter = document.getElementById('starsFilter');
-const forksFilter = document.getElementById('forksFilter');
+const popularityFilter = document.getElementById('popularityFilter');
 const prevPageButton = document.getElementById('prevPage');
 const nextPageButton = document.getElementById('nextPage');
+const gitboardTitle = document.getElementById('gitboard-title');
 let currentPage = 1;
 let currentSearchType = 'repo';
 let totalPages = 1;
 
 // Load Theme
 document.body.classList.toggle('dark-mode', localStorage.getItem('darkMode') === 'true');
+updateThemeIcon();
 
-// Toggle Theme
-lightIcon.addEventListener('click', () => toggleDarkMode(true));
-darkIcon.addEventListener('click', () => toggleDarkMode(false));
+// Theme Switcher
+themeIcon.addEventListener('click', () => {
+    const isDarkMode = document.body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode', isDarkMode);
+    updateThemeIcon();
+});
 
-function toggleDarkMode(dark) {
-    document.body.classList.toggle('dark-mode', dark);
-    localStorage.setItem('darkMode', dark);
+function updateThemeIcon() {
+    themeIcon.textContent = document.body.classList.contains('dark-mode') ? 'dark_mode' : 'light_mode';
 }
 
-// Search Button and Enter Key Event
+// GitBoard Title Click (Reset search and filters)
+gitboardTitle.addEventListener('click', () => {
+    searchInput.value = '';
+    languageFilter.value = '';
+    popularityFilter.value = 'stars';
+    resultsContainer.innerHTML = '';
+    loadFeaturedRepos();
+});
+
+// Search Event Listeners
 searchButton.addEventListener('click', () => executeSearch());
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') executeSearch();
@@ -34,14 +46,19 @@ searchInput.addEventListener('keypress', (e) => {
 
 function executeSearch() {
     const query = searchInput.value.trim();
+    const language = languageFilter.value;
+    const popularity = popularityFilter.value;
+    
     if (!query) return;
-    const type = searchType.value;
-    const url = type === 'repo' ? `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}` : `https://api.github.com/search/users?q=${encodeURIComponent(query)}`;
-
+    
+    let url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}`;
+    
+    if (language) url += `+language:${encodeURIComponent(language)}`;
+    url += `&sort=${popularity}&order=desc`;
+    
     fetch(url)
         .then(res => res.json())
         .then(data => {
-            currentSearchType = type;
             displayResults(data.items);
             totalPages = Math.ceil(data.items.length / 30);
             updatePagination();
@@ -49,7 +66,7 @@ function executeSearch() {
         .catch(err => console.error('GitHub API error:', err));
 }
 
-// Display repos or users with pagination
+// Display Repositories with Pagination
 function displayResults(results) {
     resultsContainer.innerHTML = '';
     if (!results || results.length === 0) {
@@ -60,45 +77,18 @@ function displayResults(results) {
     results.slice((currentPage - 1) * 30, currentPage * 30).forEach(result => {
         const item = document.createElement('div');
         item.className = 'result-item';
-        
-        if (currentSearchType === 'repo') {
-            item.innerHTML = `
-                <h3>${result.name}</h3>
-                <p>${result.description || 'No description available'}</p>
-                <p><strong>Owner:</strong> ${result.owner.login}</p>
-                <p><strong>Stars:</strong> ${result.stargazers_count}, <strong>Forks:</strong> ${result.forks_count}, <strong>Watchers:</strong> ${result.watchers_count}</p>
-                <a href="${result.html_url}" target="_blank" class="button">View Repo on GitHub</a>
-            `;
-        } else {
-            item.innerHTML = `
-                <h3>${result.login}</h3>
-                <a href="${result.html_url}" target="_blank" class="button">View Profile on GitHub</a>
-                <button class="expand-repos">Show Repos</button>
-                <div class="user-repos hidden"></div>
-            `;
-            
-            // Add repo expansion for users
-            item.querySelector('.expand-repos').addEventListener('click', () => {
-                fetch(`https://api.github.com/users/${result.login}/repos`)
-                    .then(res => res.json())
-                    .then(repos => {
-                        const repoContainer = item.querySelector('.user-repos');
-                        repoContainer.innerHTML = '';
-                        repoContainer.classList.toggle('hidden');
-                        repos.forEach(repo => {
-                            repoContainer.innerHTML += `
-                                <p><strong>${repo.name}</strong>: ${repo.description || 'No description available'}</p>
-                            `;
-                        });
-                    });
-            });
-        }
-        
+        item.innerHTML = `
+            <h3>${result.name}</h3>
+            <p>${result.description || 'No description available'}</p>
+            <p><strong>Owner:</strong> ${result.owner.login}</p>
+            <p><strong>Stars:</strong> ${result.stargazers_count}, <strong>Forks:</strong> ${result.forks_count}, <strong>Watchers:</strong> ${result.watchers_count}</p>
+            <a href="${result.html_url}" target="_blank" class="button">View Repo on GitHub</a>
+        `;
         resultsContainer.appendChild(item);
     });
 }
 
-// Pagination functions
+// Pagination Update and Event Handlers
 function updatePagination() {
     prevPageButton.classList.toggle('hidden', currentPage === 1);
     nextPageButton.classList.toggle('hidden', currentPage >= totalPages);
