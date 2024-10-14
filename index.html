@@ -28,6 +28,11 @@
     </header>
 
     <main class="container">
+        <!-- Progress Bar -->
+        <div id="loadingBarContainer" class="loading-bar-container hidden">
+            <div id="loadingBar" class="loading-bar"></div>
+        </div>
+
         <!-- Search Bar -->
         <div class="search-bar">
             <select id="searchType">
@@ -51,6 +56,8 @@
                 <option value="Go">Go</option>
                 <option value="PHP">PHP</option>
                 <option value="C++">C++</option>
+                <option value="HTML">HTML</option>
+                <option value="CSS">CSS</option>
                 <!-- Add more languages as needed -->
             </select>
 
@@ -61,6 +68,20 @@
                 <option value="forks">Forks</option>
                 <option value="watchers">Watchers</option>
             </select>
+
+            <!-- License Filter -->
+            <label for="licenseFilter">License:</label>
+            <select id="licenseFilter">
+                <option value="">All Licenses</option>
+                <option value="mit">MIT License</option>
+                <option value="gpl">GPL License</option>
+                <option value="apache">Apache License</option>
+                <!-- Add more licenses as needed -->
+            </select>
+
+            <!-- Date Filter -->
+            <label for="dateFilter">Created After:</label>
+            <input type="date" id="dateFilter">
         </div>
 
         <!-- Search Results -->
@@ -80,7 +101,7 @@
         <!-- Pagination Section -->
         <div id="pagination" class="pagination">
             <button id="prevPage" class="hidden">Previous</button>
-            <span id="currentPage">1</span>
+            <span id="currentPage">1</span> of <span id="totalPages">1</span>
             <button id="nextPage" class="hidden">Next</button>
         </div>
     </main>
