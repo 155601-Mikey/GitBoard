@@ -16,18 +16,20 @@
         <!-- GitBoard Logo (Clears filters and search) -->
         <h1 id="gitboard-title" class="clickable">GitBoard</h1>
 
-        <!-- Bug Report Button -->
-        <a href="https://github.com/155601-Mikey/GitBoard/issues" target="_blank" class="bug-report-btn">
-            <span class="material-icons">bug_report</span> Report Bug
-        </a>
+        <!-- Bug Report and View Code Buttons -->
+        <div class="header-buttons">
+            <a href="https://github.com/155601-Mikey/GitBoard/issues" target="_blank" class="btn">
+                <span class="material-icons">bug_report</span> Report Bug
+            </a>
+            <a href="https://github.com/155601-Mikey/GitBoard" target="_blank" class="btn">
+                <span class="material-icons">code</span> View Code
+            </a>
+        </div>
 
         <!-- Expanding Search Icon and Theme Switcher -->
         <div class="quick-access">
             <!-- Expanding Search Box -->
-            <div class="expand-search">
-                <span class="material-icons" id="expand-search-icon">search</span>
-                <input type="text" id="quickSearchInput" class="hidden" placeholder="Quick Search...">
-            </div>
+            <span class="material-icons" id="expand-search-icon">search</span>
 
             <!-- Theme Switcher -->
             <div class="theme-switcher">
@@ -48,38 +50,42 @@
                 <option value="repo">Repos</option>
                 <option value="user">Users</option>
             </select>
-            <input type="text" id="searchInput" placeholder="Search GitHub repos or users...">
+            <input type="text" id="searchInput" maxlength="200" placeholder="Search GitHub repos or users...">
             <button id="searchButton"><span class="material-icons">search</span></button>
         </div>
 
         <!-- Filters Section -->
         <div id="filters" class="filters">
-            <label for="languageFilter">Language:</label>
+            <!-- Language Filter with Icons -->
+            <label for="languageFilter"><span class="material-icons">code</span> Language:</label>
             <select id="languageFilter">
-                <option value="">All Languages</option>
+                <option value="none">None</option>
                 <option value="JavaScript">JavaScript</option>
                 <option value="Python">Python</option>
                 <option value="HTML">HTML</option>
                 <option value="CSS">CSS</option>
-                <!-- Add more languages as needed -->
             </select>
 
-            <label for="popularityFilter">Sort by:</label>
+            <!-- Popularity Filter with Icons -->
+            <label for="popularityFilter"><span class="material-icons">star</span> Sort by:</label>
             <select id="popularityFilter">
+                <option value="none">None</option>
                 <option value="stars">Stars</option>
                 <option value="forks">Forks</option>
                 <option value="watchers">Watchers</option>
             </select>
 
-            <label for="licenseFilter">License:</label>
+            <!-- License Filter with Icons -->
+            <label for="licenseFilter"><span class="material-icons">gavel</span> License:</label>
             <select id="licenseFilter">
-                <option value="">All Licenses</option>
+                <option value="none">None</option>
                 <option value="mit">MIT License</option>
                 <option value="gpl">GPL License</option>
                 <option value="apache">Apache License</option>
             </select>
 
-            <label for="dateFilter">Created After:</label>
+            <!-- Date Filter with Icons -->
+            <label for="dateFilter"><span class="material-icons">calendar_today</span> Created After:</label>
             <input type="date" id="dateFilter">
         </div>
 
@@ -96,13 +102,6 @@
             <h2>Featured Repos</h2>
             <!-- Featured repos will be added dynamically -->
         </section>
-
-        <!-- Pagination Section -->
-        <div id="pagination" class="pagination">
-            <button id="prevPage" class="hidden">Previous</button>
-            <span id="currentPage">1</span> of <span id="totalPages">1</span>
-            <button id="nextPage" class="hidden">Next</button>
-        </div>
     </main>
 
     <!-- Footer with Source Code Links -->
