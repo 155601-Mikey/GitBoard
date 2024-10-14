@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Repo & Account Search</title>
+    <!-- Google Fonts or Custom Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Icons (FontAwesome) -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <!-- CSS Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="navbar">
+        <h1>RepoFinder</h1>
+        <div class="theme-switcher">
+            <i class="fas fa-sun" id="light-icon"></i>
+            <i class="fas fa-moon" id="dark-icon"></i>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search for GitHub repos or users...">
+            <button id="searchButton"><i class="fas fa-search"></i></button>
+        </div>
+
+        <section id="results" class="results">
+            <!-- Search results will be displayed here -->
+        </section>
+    </main>
+
+    <!-- JavaScript File -->
+    <script src="script.js"></script>
+</body>
+</html>
