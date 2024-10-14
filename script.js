@@ -32,26 +32,42 @@ function updateThemeIcons(isDark) {
     }
 }
 
-// Mock Search Functionality
+// GitHub API Search
 searchButton.addEventListener('click', () => {
     const query = document.getElementById('searchInput').value.trim();
     if (query === '') return;
-    resultsContainer.innerHTML = '';
-    
-    // Simulate search results
-    const mockResults = [
-        { name: 'Repo1', description: 'A cool GitHub repository', url: '#' },
-        { name: 'Repo2', description: 'Another awesome project', url: '#' }
-    ];
+    searchGitHub(query);
+});
 
-    mockResults.forEach(result => {
+function searchGitHub(query) {
+    const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}`;
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            displayResults(data.items);
+        })
+        .catch(error => {
+            console.error('Error fetching GitHub data:', error);
+        });
+}
+
+function displayResults(results) {
+    resultsContainer.innerHTML = '';
+
+    if (results.length === 0) {
+        resultsContainer.innerHTML = '<p>No results found</p>';
+        return;
+    }
+
+    results.forEach(result => {
         const resultItem = document.createElement('div');
         resultItem.className = 'result-item';
         resultItem.innerHTML = `
             <h3>${result.name}</h3>
-            <p>${result.description}</p>
-            <a href="${result.url}" target="_blank">View on GitHub</a>
+            <p>${result.description || 'No description available'}</p>
+            <a href="${result.html_url}" target="_blank">View on GitHub</a>
         `;
         resultsContainer.appendChild(resultItem);
     });
-});
+}
