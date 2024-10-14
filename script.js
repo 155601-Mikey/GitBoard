@@ -112,8 +112,11 @@ function displayRepoResults(results) {
         item.innerHTML = `
             <h3>${result.name}</h3>
             <p>${result.description || 'No description available'}</p>
-            <p><strong>Owner:</strong> ${result.owner.login}</p>
-            <p><strong>Stars:</strong> ${result.stargazers_count}, <strong>Forks:</strong> ${result.forks_count}, <strong>Watchers:</strong> ${result.watchers_count}</p>
+            <div class="stats">
+                <span>${result.stargazers_count} Stars</span> •
+                <span>${result.forks_count} Forks</span> •
+                <span>${result.watchers_count} Watchers</span>
+            </div>
             <a href="${result.html_url}" target="_blank" class="button">View Repo on GitHub</a>
             ${pagesLink}
         `;
@@ -213,4 +216,3 @@ function loadFeaturedRepos() {
 
 // Load featured repos on page load
 loadFeaturedRepos();
-                    
