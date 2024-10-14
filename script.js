@@ -12,6 +12,7 @@ const prevPageButton = document.getElementById('prevPage');
 const nextPageButton = document.getElementById('nextPage');
 let currentPage = 1;
 let currentSearchType = 'repo';
+let totalPages = 1;
 
 // Load Theme
 document.body.classList.toggle('dark-mode', localStorage.getItem('darkMode') === 'true');
@@ -25,7 +26,7 @@ function toggleDarkMode(dark) {
     localStorage.setItem('darkMode', dark);
 }
 
-// Handle search button and enter key
+// Search Button and Enter Key Event
 searchButton.addEventListener('click', () => executeSearch());
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') executeSearch();
@@ -42,11 +43,13 @@ function executeSearch() {
         .then(data => {
             currentSearchType = type;
             displayResults(data.items);
+            totalPages = Math.ceil(data.items.length / 30);
+            updatePagination();
         })
         .catch(err => console.error('GitHub API error:', err));
 }
 
-// Display repo or user results
+// Display repos or users with pagination
 function displayResults(results) {
     resultsContainer.innerHTML = '';
     if (!results || results.length === 0) {
@@ -54,7 +57,7 @@ function displayResults(results) {
         return;
     }
 
-    results.slice(0, 30).forEach(result => {
+    results.slice((currentPage - 1) * 30, currentPage * 30).forEach(result => {
         const item = document.createElement('div');
         item.className = 'result-item';
         
@@ -63,31 +66,68 @@ function displayResults(results) {
                 <h3>${result.name}</h3>
                 <p>${result.description || 'No description available'}</p>
                 <p><strong>Owner:</strong> ${result.owner.login}</p>
+                <p><strong>Stars:</strong> ${result.stargazers_count}, <strong>Forks:</strong> ${result.forks_count}, <strong>Watchers:</strong> ${result.watchers_count}</p>
                 <a href="${result.html_url}" target="_blank" class="button">View Repo on GitHub</a>
             `;
         } else {
             item.innerHTML = `
                 <h3>${result.login}</h3>
                 <a href="${result.html_url}" target="_blank" class="button">View Profile on GitHub</a>
+                <button class="expand-repos">Show Repos</button>
+                <div class="user-repos hidden"></div>
             `;
+            
+            // Add repo expansion for users
+            item.querySelector('.expand-repos').addEventListener('click', () => {
+                fetch(`https://api.github.com/users/${result.login}/repos`)
+                    .then(res => res.json())
+                    .then(repos => {
+                        const repoContainer = item.querySelector('.user-repos');
+                        repoContainer.innerHTML = '';
+                        repoContainer.classList.toggle('hidden');
+                        repos.forEach(repo => {
+                            repoContainer.innerHTML += `
+                                <p><strong>${repo.name}</strong>: ${repo.description || 'No description available'}</p>
+                            `;
+                        });
+                    });
+            });
         }
         
         resultsContainer.appendChild(item);
     });
 }
 
-// Add pagination (if more than 30 items)
-function handlePagination() {
-    // Add logic here to manage multi-pages with results
+// Pagination functions
+function updatePagination() {
+    prevPageButton.classList.toggle('hidden', currentPage === 1);
+    nextPageButton.classList.toggle('hidden', currentPage >= totalPages);
 }
 
-// Featured Repos
+prevPageButton.addEventListener('click', () => {
+    if (currentPage > 1) {
+        currentPage--;
+        executeSearch();
+    }
+});
+
+nextPageButton.addEventListener('click', () => {
+    if (currentPage < totalPages) {
+        currentPage++;
+        executeSearch();
+    }
+});
+
+// Featured Repos - Most Visited and Recently Created
 function loadFeaturedRepos() {
     fetch('https://api.github.com/repositories')
         .then(res => res.json())
         .then(data => {
             featuredContainer.innerHTML = '';
-            data.slice(0, 3).forEach(repo => {
+            const mostVisited = data.slice(0, 3);  // Mock for "most visited"
+            const recentlyCreated = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 3);
+            
+            [...mostVisited, ...recentlyCreated].forEach(repo => {
                 const item = document.createElement('div');
                 item.className = 'featured-item';
                 item.innerHTML = `
