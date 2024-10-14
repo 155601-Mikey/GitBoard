@@ -11,7 +11,8 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header class="navbar glossy">
+    <!-- Sticky Navbar -->
+    <header class="navbar glossy sticky">
         <h1>GitBoard</h1>
         <div class="theme-switcher">
             <span class="material-icons" id="light-icon">light_mode</span>
@@ -20,6 +21,7 @@
     </header>
 
     <main class="container">
+        <!-- Search Bar -->
         <div class="search-bar">
             <select id="searchType">
                 <option value="repo">Repos</option>
@@ -39,13 +41,18 @@
             <input type="number" id="forksFilter" placeholder="Min forks">
         </div>
 
+        <!-- Search Results -->
+        <section id="results" class="results">
+            <!-- Search results will be displayed here -->
+        </section>
+
+        <!-- Separator -->
+        <hr class="separator" />
+
+        <!-- Featured Repos Section -->
         <section id="featured" class="featured">
             <h2>Featured Repos</h2>
             <!-- Featured repos will be added dynamically -->
-        </section>
-
-        <section id="results" class="results">
-            <!-- Search results will be displayed here -->
         </section>
 
         <!-- Pagination Section -->
@@ -55,6 +62,13 @@
             <button id="nextPage" class="hidden">Next</button>
         </div>
     </main>
+
+    <!-- Footer with Description -->
+    <footer>
+        <p id="footer-description">
+            GitBoard helps you discover GitHub repositories and users with ease. Search for trending repos, explore users, and check out the most popular projects in the GitHub community.
+        </p>
+    </footer>
 
     <!-- JavaScript File -->
     <script src="script.js"></script>
