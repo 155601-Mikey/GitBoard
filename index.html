@@ -41,17 +41,19 @@
             <div id="loadingBar" class="loading-bar"></div>
         </div>
 
-        <!-- Search Bar (moved down) -->
+        <!-- Search Bar with Styling -->
         <div class="search-bar">
-            <select id="searchType">
+            <select id="searchType" class="search-type">
                 <option value="repo">Repos</option>
                 <option value="user">Users</option>
             </select>
-            <input type="text" id="searchInput" maxlength="200" placeholder="Search GitHub repos or users...">
-            <button id="searchButton"><span class="material-icons">search</span></button>
+            <input type="text" id="searchInput" maxlength="200" placeholder="Search GitHub repos or users..." class="search-input">
+            <button id="searchButton" class="search-button">
+                <span class="material-icons">search</span>
+            </button>
         </div>
 
-        <!-- Filters Section (side-by-side layout) -->
+        <!-- Filters Section (side-by-side layout with new filters) -->
         <div id="filters" class="filters">
             <!-- Language Filter with Icons -->
             <label for="languageFilter"><span class="material-icons">code</span> Language:</label>
@@ -61,29 +63,36 @@
                 <option value="Python">Python</option>
                 <option value="HTML">HTML</option>
                 <option value="CSS">CSS</option>
+                <option value="Ruby">Ruby</option>
+                <option value="Go">Go</option>
+                <option value="C++">C++</option>
+                <option value="PHP">PHP</option>
+                <option value="TypeScript">TypeScript</option>
+                <option value="Swift">Swift</option>
+                <option value="Kotlin">Kotlin</option>
+                <option value="Rust">Rust</option>
+                <!-- Add more language options -->
             </select>
 
             <!-- Popularity Filter with Icons -->
-            <label for="popularityFilter"><span class="material-icons">star</span> Sort by:</label>
-            <select id="popularityFilter">
-                <option value="none">None</option>
-                <option value="stars">Stars</option>
-                <option value="forks">Forks</option>
-                <option value="watchers">Watchers</option>
-            </select>
+            <label for="popularityFilter"><span class="material-icons">star</span> Stars >:</label>
+            <input type="number" id="starsFilter" placeholder="e.g. 100">
 
-            <!-- License Filter with Icons -->
-            <label for="licenseFilter"><span class="material-icons">gavel</span> License:</label>
-            <select id="licenseFilter">
-                <option value="none">None</option>
-                <option value="mit">MIT License</option>
-                <option value="gpl">GPL License</option>
-                <option value="apache">Apache License</option>
-            </select>
+            <!-- Forks Filter -->
+            <label for="forksFilter"><span class="material-icons">call_split</span> Forks >:</label>
+            <input type="number" id="forksFilter" placeholder="e.g. 50">
 
-            <!-- Date Filter with Icons -->
-            <label for="dateFilter"><span class="material-icons">calendar_today</span> Created After:</label>
-            <input type="date" id="dateFilter">
+            <!-- Issues Filter -->
+            <label for="issuesFilter"><span class="material-icons">bug_report</span> Open Issues >:</label>
+            <input type="number" id="issuesFilter" placeholder="e.g. 10">
+
+            <!-- Last Push Date -->
+            <label for="pushedFilter"><span class="material-icons">update</span> Pushed After:</label>
+            <input type="date" id="pushedFilter">
+
+            <!-- Topic Filter -->
+            <label for="topicFilter"><span class="material-icons">topic</span> Topic:</label>
+            <input type="text" id="topicFilter" placeholder="e.g. machine-learning">
         </div>
 
         <!-- Search Results -->
