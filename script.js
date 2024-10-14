@@ -7,9 +7,11 @@ const resultsContainer = document.getElementById('results');
 const featuredContainer = document.getElementById('featured');
 const searchType = document.getElementById('searchType');
 const languageFilter = document.getElementById('languageFilter');
-const popularityFilter = document.getElementById('popularityFilter');
-const licenseFilter = document.getElementById('licenseFilter');
-const dateFilter = document.getElementById('dateFilter');
+const starsFilter = document.getElementById('starsFilter');
+const forksFilter = document.getElementById('forksFilter');
+const issuesFilter = document.getElementById('issuesFilter');
+const pushedFilter = document.getElementById('pushedFilter');
+const topicFilter = document.getElementById('topicFilter');
 const gitboardTitle = document.getElementById('gitboard-title');
 const loadingBar = document.getElementById('loadingBar');
 const loadingBarContainer = document.getElementById('loadingBarContainer');
@@ -33,9 +35,11 @@ function updateThemeIcon() {
 gitboardTitle.addEventListener('click', () => {
     searchInput.value = '';
     languageFilter.value = 'none';
-    popularityFilter.value = 'none';
-    licenseFilter.value = 'none';
-    dateFilter.value = '';
+    starsFilter.value = '';
+    forksFilter.value = '';
+    issuesFilter.value = '';
+    pushedFilter.value = '';
+    topicFilter.value = '';
     resultsContainer.innerHTML = '';
     loadFeaturedRepos();
 });
@@ -67,15 +71,19 @@ function executeSearch() {
 // Repo Search Functionality
 function searchRepos(query) {
     const language = languageFilter.value !== 'none' ? languageFilter.value : '';
-    const popularity = popularityFilter.value !== 'none' ? popularityFilter.value : '';
-    const license = licenseFilter.value !== 'none' ? licenseFilter.value : '';
-    const date = dateFilter.value;
+    const stars = starsFilter.value;
+    const forks = forksFilter.value;
+    const issues = issuesFilter.value;
+    const pushed = pushedFilter.value;
+    const topic = topicFilter.value;
     
     let url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}`;
     if (language) url += `+language:${encodeURIComponent(language)}`;
-    if (license) url += `+license:${encodeURIComponent(license)}`;
-    if (date) url += `+created:>${date}`;
-    if (popularity) url += `&sort=${popularity}&order=desc`;
+    if (stars) url += `+stars:>${stars}`;
+    if (forks) url += `+forks:>${forks}`;
+    if (issues) url += `+open_issues:>${issues}`;
+    if (pushed) url += `+pushed:>${pushed}`;
+    if (topic) url += `+topic:${encodeURIComponent(topic)}`;
 
     showLoadingBar();
     
@@ -111,7 +119,7 @@ function displayRepoResults(results) {
         
         item.innerHTML = `
             <h3>${result.name}</h3>
-            <p>${result.description || 'No description available'}</p>
+            <p>${result.description.length > 200 ? result.description.substring(0, 200) + '...' : result.description || 'No description available'}</p>
             <div class="stats">
                 <span>${result.stargazers_count} Stars</span> •
                 <span>${result.forks_count} Forks</span> •
