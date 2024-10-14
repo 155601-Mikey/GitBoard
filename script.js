@@ -2,6 +2,8 @@
 const themeIcon = document.getElementById('theme-icon');
 const searchButton = document.getElementById('searchButton');
 const searchInput = document.getElementById('searchInput');
+const quickSearchInput = document.getElementById('quickSearchInput');
+const expandSearchIcon = document.getElementById('expand-search-icon');
 const resultsContainer = document.getElementById('results');
 const featuredContainer = document.getElementById('featured');
 const searchType = document.getElementById('searchType');
@@ -15,7 +17,6 @@ const gitboardTitle = document.getElementById('gitboard-title');
 const loadingBar = document.getElementById('loadingBar');
 const loadingBarContainer = document.getElementById('loadingBarContainer');
 let currentPage = 1;
-let currentSearchType = 'repo';
 let totalPages = 1;
 
 // Load Theme
@@ -33,6 +34,12 @@ function updateThemeIcon() {
     themeIcon.textContent = document.body.classList.contains('dark-mode') ? 'dark_mode' : 'light_mode';
 }
 
+// Expanding Search Box Logic
+expandSearchIcon.addEventListener('click', () => {
+    quickSearchInput.classList.toggle('show');
+    quickSearchInput.focus();
+});
+
 // GitBoard Title Click (Reset search and filters)
 gitboardTitle.addEventListener('click', () => {
     searchInput.value = '';
@@ -48,6 +55,12 @@ gitboardTitle.addEventListener('click', () => {
 searchButton.addEventListener('click', () => executeSearch());
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') executeSearch();
+});
+quickSearchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        searchInput.value = quickSearchInput.value; // Sync with main search input
+        executeSearch();
+    }
 });
 
 function executeSearch() {
@@ -146,7 +159,7 @@ function loadFeaturedRepos() {
     fetch('https://api.github.com/repositories')
         .then(res => res.json())
         .then(data => {
-            featuredContainer.innerHTML = '';
+            featuredContainer.innerHTML = ''; // Clear any previous featured repos
             const mostVisited = data.slice(0, 3);  // Mock for "most visited"
             const recentlyCreated = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 3);
             
