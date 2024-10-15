@@ -53,7 +53,10 @@
             </button>
         </div>
 
-        <!-- Filters Section (side-by-side layout with new filters) -->
+        <!-- Toggle Filter Button -->
+        <button id="toggleFiltersButton" class="toggle-filters-button">Toggle Filters</button>
+
+        <!-- Filters Section (hidden for user search) -->
         <div id="filters" class="filters">
             <!-- Language Filter with Icons -->
             <label for="languageFilter"><span class="material-icons">code</span> Language:</label>
@@ -71,11 +74,10 @@
                 <option value="Swift">Swift</option>
                 <option value="Kotlin">Kotlin</option>
                 <option value="Rust">Rust</option>
-                <!-- Add more language options -->
             </select>
 
             <!-- Popularity Filter with Icons -->
-            <label for="popularityFilter"><span class="material-icons">star</span> Stars >:</label>
+            <label for="starsFilter"><span class="material-icons">star</span> Stars >:</label>
             <input type="number" id="starsFilter" placeholder="e.g. 100">
 
             <!-- Forks Filter -->
@@ -97,6 +99,12 @@
 
         <!-- Search Results -->
         <section id="results" class="results">
+            <!-- Skeleton Loaders for loading state -->
+            <div id="skeletonLoaders" class="skeleton-loaders hidden">
+                <div class="skeleton-loader"></div>
+                <div class="skeleton-loader"></div>
+                <div class="skeleton-loader"></div>
+            </div>
             <!-- Search results will be displayed here -->
         </section>
 
@@ -116,7 +124,7 @@
             GitBoard helps you discover GitHub repositories and users with ease. Search for trending repos, explore users, and check out the most popular projects in the GitHub community.
         </p>
         <p>
-            View source on <a href="https://github.com/155601-Mikey/GitBoard" target="_blank">GitHub</a>.
+            <strong>View source on <a href="https://github.com/155601-Mikey/GitBoard" target="_blank">GitHub</a>.</strong>
         </p>
     </footer>
 
