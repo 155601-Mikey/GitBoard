@@ -92,6 +92,23 @@ body.dark-mode {
     background-color: var(--primary-color);
 }
 
+/* Toggle Filters Button */
+.toggle-filters-button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.toggle-filters-button:hover {
+    background-color: var(--secondary-color);
+}
+
 /* Filters Section with Icons (side-by-side layout) */
 .filters {
     display: flex;
@@ -127,6 +144,7 @@ body.dark-mode .filters select, body.dark-mode .filters input {
     border-radius: var(--border-radius);
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, background-color 0.3s;
+    margin-bottom: 20px; /* Add space between items */
 }
 
 body.dark-mode .result-item, body.dark-mode .featured-item {
@@ -151,6 +169,32 @@ body.dark-mode .result-item, body.dark-mode .featured-item {
 
 .button:hover {
     background-color: var(--secondary-color);
+}
+
+/* Skeleton Loader for loading state */
+.skeleton-loaders {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.skeleton-loader {
+    height: 120px;
+    background-color: #e0e0e0;
+    border-radius: var(--border-radius);
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0% {
+        background-color: #e0e0e0;
+    }
+    50% {
+        background-color: #c0c0c0;
+    }
+    100% {
+        background-color: #e0e0e0;
+    }
 }
 
 /* Stat Icons with • Separators */
