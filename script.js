@@ -13,8 +13,12 @@ const issuesFilter = document.getElementById('issuesFilter');
 const pushedFilter = document.getElementById('pushedFilter');
 const topicFilter = document.getElementById('topicFilter');
 const gitboardTitle = document.getElementById('gitboard-title');
+const toggleFiltersButton = document.getElementById('toggleFiltersButton');
+const filtersContainer = document.getElementById('filters');
+const skeletonLoaders = document.getElementById('skeletonLoaders');
 const loadingBar = document.getElementById('loadingBar');
 const loadingBarContainer = document.getElementById('loadingBarContainer');
+let debounceTimer;
 
 // Load Theme
 document.body.classList.toggle('dark-mode', localStorage.getItem('darkMode') === 'true');
@@ -30,6 +34,12 @@ themeIcon.addEventListener('click', () => {
 function updateThemeIcon() {
     themeIcon.textContent = document.body.classList.contains('dark-mode') ? 'dark_mode' : 'light_mode';
 }
+
+// Toggle Filters Button
+toggleFiltersButton.addEventListener('click', () => {
+    filtersContainer.classList.toggle('hidden');
+    toggleFiltersButton.textContent = filtersContainer.classList.contains('hidden') ? 'Show Filters' : 'Hide Filters';
+});
 
 // GitBoard Title Click (Reset search and filters)
 gitboardTitle.addEventListener('click', () => {
@@ -49,8 +59,12 @@ expandSearchIcon.addEventListener('click', () => {
     searchInput.focus();
 });
 
-// Search Event Listeners
+// Search Event Listeners with Debouncing
 searchButton.addEventListener('click', () => executeSearch());
+searchInput.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(executeSearch, 500);  // Debouncing with a 500ms delay
+});
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') executeSearch();
 });
@@ -62,8 +76,10 @@ function executeSearch() {
     if (!query) return;
     
     if (type === 'repo') {
+        filtersContainer.classList.remove('hidden');  // Show filters for repo search
         searchRepos(query);
     } else {
+        filtersContainer.classList.add('hidden');  // Hide filters for user search
         searchUsers(query);
     }
 }
@@ -86,16 +102,19 @@ function searchRepos(query) {
     if (topic) url += `+topic:${encodeURIComponent(topic)}`;
 
     showLoadingBar();
+    showSkeletonLoaders();
     
     fetch(url)
         .then(res => res.json())
         .then(data => {
             hideLoadingBar();
+            hideSkeletonLoaders();
             displayRepoResults(data.items);
         })
         .catch(err => {
             console.error('GitHub API error:', err);
             hideLoadingBar();
+            hideSkeletonLoaders();
         });
 }
 
@@ -116,8 +135,12 @@ function displayRepoResults(results) {
         if (result.has_pages && result.homepage) {
             pagesLink = `<a href="${result.homepage}" target="_blank" class="button">View GitHub Pages</a>`;
         }
-        
+
+        // Include owner profile picture
+        const ownerProfilePic = `<img src="${result.owner.avatar_url}" alt="${result.owner.login} Profile Picture" class="profile-picture">`;
+
         item.innerHTML = `
+            ${ownerProfilePic}
             <h3>${result.name}</h3>
             <p>${result.description.length > 200 ? result.description.substring(0, 200) + '...' : result.description || 'No description available'}</p>
             <div class="stats">
@@ -135,16 +158,19 @@ function displayRepoResults(results) {
 // User Search Functionality
 function searchUsers(query) {
     showLoadingBar();
+    showSkeletonLoaders();
 
     fetch(`https://api.github.com/search/users?q=${encodeURIComponent(query)}`)
         .then(res => res.json())
         .then(data => {
             hideLoadingBar();
+            hideSkeletonLoaders();
             displayUserResults(data.items);
         })
         .catch(err => {
             console.error('GitHub API error:', err);
             hideLoadingBar();
+            hideSkeletonLoaders();
         });
 }
 
@@ -159,8 +185,12 @@ function displayUserResults(users) {
     users.forEach(user => {
         const item = document.createElement('div');
         item.className = 'result-item';
+
+        // Include profile picture
+        const profilePic = `<img src="${user.avatar_url}" alt="${user.login} Profile Picture" class="profile-picture">`;
         
         item.innerHTML = `
+            ${profilePic}
             <h3>${user.login}</h3>
             <a href="${user.html_url}" target="_blank" class="button">View Profile on GitHub</a>
             <button class="expand-repos">Show Repos</button>
@@ -197,6 +227,15 @@ function hideLoadingBar() {
         loadingBarContainer.classList.add('hidden');
         loadingBar.style.width = '0%';
     }, 500);
+}
+
+// Show and Hide Skeleton Loaders
+function showSkeletonLoaders() {
+    skeletonLoaders.classList.remove('hidden');
+}
+
+function hideSkeletonLoaders() {
+    skeletonLoaders.classList.add('hidden');
 }
 
 // Load Featured Repos
