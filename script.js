@@ -1,4 +1,3 @@
-ks on page load
 // DOM Elements
 const themeIcon = document.getElementById('theme-icon');
 const searchButton = document.getElementById('searchButton');
