@@ -36,7 +36,7 @@
     </header>
 
     <main class="container">
-        <!-- Progress Bar -->
+        <!-- Animated Loading Bar -->
         <div id="loadingBarContainer" class="loading-bar-container hidden">
             <div id="loadingBar" class="loading-bar"></div>
         </div>
@@ -86,40 +86,13 @@
                 <option value="stars">Stars</option>
                 <option value="forks">Forks</option>
                 <option value="updated">Last Updated</option>
+                <option value="activity">Recent Activity</option> <!-- Added Activity Sorting -->
                 <option value="created">Recently Created</option>
             </select>
-
-            <!-- Stars Filter -->
-            <label for="starsFilter"><span class="material-icons">star</span> Stars >:</label>
-            <input type="number" id="starsFilter" placeholder="e.g. 100">
-
-            <!-- Forks Filter -->
-            <label for="forksFilter"><span class="material-icons">call_split</span> Forks >:</label>
-            <input type="number" id="forksFilter" placeholder="e.g. 50">
-
-            <!-- Issues Filter -->
-            <label for="issuesFilter"><span class="material-icons">bug_report</span> Open Issues >:</label>
-            <input type="number" id="issuesFilter" placeholder="e.g. 10">
-
-            <!-- Last Push Date -->
-            <label for="pushedFilter"><span class="material-icons">update</span> Pushed After:</label>
-            <input type="date" id="pushedFilter">
-
-            <!-- Topic Filter -->
-            <label for="topicFilter"><span class="material-icons">topic</span> Topic:</label>
-            <input type="text" id="topicFilter" placeholder="e.g. machine-learning">
         </div>
 
         <!-- Search Results -->
-        <section id="results" class="results">
-            <!-- Skeleton Loaders for loading state -->
-            <div id="skeletonLoaders" class="skeleton-loaders hidden">
-                <div class="skeleton-loader"></div>
-                <div class="skeleton-loader"></div>
-                <div class="skeleton-loader"></div>
-            </div>
-            <!-- Search results will be displayed here -->
-        </section>
+        <section id="results" class="results"></section>
 
         <!-- Separator -->
         <hr class="separator" />
