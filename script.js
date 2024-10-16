@@ -5,7 +5,6 @@ const searchInput = document.getElementById('searchInput');
 const expandSearchIcon = document.getElementById('expand-search-icon');
 const resultsContainer = document.getElementById('results');
 const featuredContainer = document.getElementById('featured');
-const customFeaturedRepos = document.getElementById('customFeaturedRepos');
 const searchType = document.getElementById('searchType');
 const languageFilter = document.getElementById('languageFilter');
 const sortFilter = document.getElementById('sortFilter');
@@ -135,12 +134,12 @@ function searchRepos(query) {
 // Gist Search Functionality
 function searchGists(query) {
     showLoadingBar();
-    fetch(`https://api.github.com/search/gists?q=${encodeURIComponent(query)}`)
+    fetch(`https://api.github.com/gists?q=${encodeURIComponent(query)}`)
         .then(res => res.json())
         .then(data => {
             hideLoadingBar();
             hideSkeletonLoaders();
-            displayGistResults(data.items);
+            displayGistResults(data);
         })
         .catch(err => {
             console.error('GitHub API error:', err);
@@ -187,7 +186,7 @@ function displayRepoResults(results) {
     });
 }
 
-// Display Gist Results
+// Display Gist Results (with download functionality)
 function displayGistResults(gists) {
     resultsContainer.innerHTML = '';
     if (!gists || gists.length === 0) {
@@ -201,12 +200,19 @@ function displayGistResults(gists) {
 
         const ownerProfilePic = `<img src="${gist.owner.avatar_url}" alt="${gist.owner.login} Profile Picture" class="profile-picture">`;
 
+        // Create download links for each file in the Gist
+        let filesList = '';
+        for (const file in gist.files) {
+            filesList += `<a href="${gist.files[file].raw_url}" target="_blank" download="${file}" class="button">Download ${file}</a><br>`;
+        }
+
         item.innerHTML = `
             ${ownerProfilePic}
             <h3>${gist.description || 'No description available'}</h3>
             <p><strong>Files:</strong> ${Object.keys(gist.files).join(', ')}</p>
             <p><strong>Created:</strong> ${new Date(gist.created_at).toLocaleDateString()}</p>
             <p><strong>Updated:</strong> ${new Date(gist.updated_at).toLocaleDateString()}</p>
+            ${filesList}
             <a href="${gist.html_url}" target="_blank" class="button">View Gist on GitHub</a>
         `;
         resultsContainer.appendChild(item);
@@ -306,13 +312,12 @@ function hideSkeletonLoaders() {
     skeletonLoaders.classList.add('hidden');
 }
 
-// Load Featured Repos (with customization support)
+// Load Featured Repos
 function loadFeaturedRepos() {
     fetch('https://api.github.com/repositories')
         .then(res => res.json())
         .then(data => {
             featuredContainer.innerHTML = ''; // Clear previous featured repos
-            customFeaturedRepos.innerHTML = ''; // Clear customizable featured repos
             const mostVisited = data.slice(0, 3);  // Mock for "most visited"
             const recentlyCreated = data
                 .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
@@ -330,17 +335,6 @@ function loadFeaturedRepos() {
                 `;
                 featuredContainer.appendChild(item);
             });
-
-            // Add customization option for featured repos
-            const customRepos = prompt('Enter the names of featured repos, separated by commas (e.g., react, vue, angular):');
-            if (customRepos) {
-                customRepos.split(',').forEach(repoName => {
-                    const customRepoItem = document.createElement('div');
-                    customRepoItem.className = 'featured-item';
-                    customRepoItem.innerHTML = `<h3>${repoName.trim()}</h3>`;
-                    customFeaturedRepos.appendChild(customRepoItem);
-                });
-            }
         })
         .catch(err => console.error('Error fetching featured repos:', err));
 }
