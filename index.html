@@ -41,14 +41,14 @@
             <div id="loadingBar" class="loading-bar"></div>
         </div>
 
-        <!-- Search Bar with Styling -->
+        <!-- Search Bar with Tag-Based Search -->
         <div class="search-bar">
             <select id="searchType" class="search-type">
                 <option value="repo">Repos</option>
                 <option value="user">Users</option>
                 <option value="gist">Gists</option>
             </select>
-            <input type="text" id="searchInput" maxlength="200" placeholder="Search GitHub repos, users, or gists..." class="search-input">
+            <input type="text" id="searchInput" maxlength="200" placeholder="Search GitHub repos, users, gists, or by tags..." class="search-input">
             <button id="searchButton" class="search-button">
                 <span class="material-icons">search</span>
             </button>
@@ -61,7 +61,7 @@
 
         <!-- Filters Section (hidden for user search or gists) -->
         <div id="filters" class="filters hidden">
-            <!-- Language Filter with Icons -->
+            <!-- Language Filter -->
             <label for="languageFilter"><span class="material-icons">code</span> Language:</label>
             <select id="languageFilter">
                 <option value="none">None</option>
@@ -79,6 +79,10 @@
                 <option value="Rust">Rust</option>
             </select>
 
+            <!-- Tag Search Filter -->
+            <label for="tagFilter"><span class="material-icons">label</span> Tag:</label>
+            <input type="text" id="tagFilter" placeholder="e.g., machine-learning">
+
             <!-- Sorting Options -->
             <label for="sortFilter"><span class="material-icons">sort</span> Sort by:</label>
             <select id="sortFilter">
@@ -86,9 +90,21 @@
                 <option value="stars">Stars</option>
                 <option value="forks">Forks</option>
                 <option value="updated">Last Updated</option>
-                <option value="activity">Recent Activity</option> <!-- Added Activity Sorting -->
+                <option value="activity">Recent Activity</option>
                 <option value="created">Recently Created</option>
             </select>
+
+            <!-- Stars Filter -->
+            <label for="starsFilter"><span class="material-icons">star</span> Stars >:</label>
+            <input type="number" id="starsFilter" placeholder="e.g. 100">
+
+            <!-- Forks Filter -->
+            <label for="forksFilter"><span class="material-icons">call_split</span> Forks >:</label>
+            <input type="number" id="forksFilter" placeholder="e.g. 50">
+
+            <!-- Issues Filter -->
+            <label for="issuesFilter"><span class="material-icons">bug_report</span> Open Issues >:</label>
+            <input type="number" id="issuesFilter" placeholder="e.g. 10">
         </div>
 
         <!-- Search Results -->
@@ -104,7 +120,7 @@
         </section>
     </main>
 
-    <!-- Footer with Source Code Links -->
+    <!-- Footer with Bookmark Manager -->
     <footer>
         <p id="footer-description">
             GitBoard helps you discover GitHub repositories, users, and gists with ease. Search for trending repos, explore users, and check out the most popular projects in the GitHub community.
@@ -112,6 +128,12 @@
         <p>
             <strong>View source on <a href="https://github.com/155601-Mikey/GitBoard" target="_blank">GitHub</a>.</strong>
         </p>
+
+        <!-- Bookmark Manager -->
+        <div class="bookmark-manager">
+            <h3>Your Bookmarked Repos & Gists</h3>
+            <div id="bookmarksList"></div>
+        </div>
     </footer>
 
     <!-- JavaScript File -->
