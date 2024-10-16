@@ -208,30 +208,23 @@ body.dark-mode .result-item, body.dark-mode .featured-item {
     background-color: var(--secondary-color);
 }
 
-/* Skeleton Loader for loading state */
-.skeleton-loaders {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.skeleton-loader {
-    height: 120px;
+/* Loading Bar */
+.loading-bar-container {
+    display: none;
+    width: 100%;
     background-color: #e0e0e0;
-    border-radius: var(--border-radius);
-    animation: pulse 1.5s infinite ease-in-out;
+    height: 5px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
 }
 
-@keyframes pulse {
-    0% {
-        background-color: #e0e0e0;
-    }
-    50% {
-        background-color: #c0c0c0;
-    }
-    100% {
-        background-color: #e0e0e0;
-    }
+.loading-bar {
+    background-color: var(--primary-color);
+    width: 0%;
+    height: 100%;
+    transition: width 0.4s ease;
 }
 
 /* Stat Icons with • Separators */
