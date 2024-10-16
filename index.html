@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitBoard - Discover GitHub Repos, Users, & Gists</title>
     <!-- Google Fonts and Material Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -68,7 +69,14 @@
                 <option value="Python">Python</option>
                 <option value="HTML">HTML</option>
                 <option value="CSS">CSS</option>
-                <!-- More languages -->
+                <option value="Ruby">Ruby</option>
+                <option value="Go">Go</option>
+                <option value="C++">C++</option>
+                <option value="PHP">PHP</option>
+                <option value="TypeScript">TypeScript</option>
+                <option value="Swift">Swift</option>
+                <option value="Kotlin">Kotlin</option>
+                <option value="Rust">Rust</option>
             </select>
 
             <!-- Tag Search Filter -->
@@ -83,7 +91,20 @@
                 <option value="forks">Forks</option>
                 <option value="updated">Last Updated</option>
                 <option value="activity">Recent Activity</option>
+                <option value="created">Recently Created</option>
             </select>
+
+            <!-- Stars Filter -->
+            <label for="starsFilter"><span class="material-icons">star</span> Stars >:</label>
+            <input type="number" id="starsFilter" placeholder="e.g. 100">
+
+            <!-- Forks Filter -->
+            <label for="forksFilter"><span class="material-icons">call_split</span> Forks >:</label>
+            <input type="number" id="forksFilter" placeholder="e.g. 50">
+
+            <!-- Issues Filter -->
+            <label for="issuesFilter"><span class="material-icons">bug_report</span> Open Issues >:</label>
+            <input type="number" id="issuesFilter" placeholder="e.g. 10">
         </div>
 
         <!-- Search Results -->
@@ -92,14 +113,14 @@
         <!-- Separator -->
         <hr class="separator" />
 
-        <!-- Saved List Section (replacing Featured Repos) -->
-        <section id="saved" class="saved">
-            <h2>Saved Repos & Gists</h2>
-            <div id="bookmarksList"></div>
+        <!-- Featured Repos Section -->
+        <section id="featured" class="featured">
+            <h2>Featured Repos</h2>
+            <!-- Featured repos will be added dynamically -->
         </section>
     </main>
 
-    <!-- Footer with GitHub Link -->
+    <!-- Footer with Bookmark Manager -->
     <footer>
         <p id="footer-description">
             GitBoard helps you discover GitHub repositories, users, and gists with ease. Search for trending repos, explore users, and check out the most popular projects in the GitHub community.
@@ -107,6 +128,12 @@
         <p>
             <strong>View source on <a href="https://github.com/155601-Mikey/GitBoard" target="_blank">GitHub</a>.</strong>
         </p>
+
+        <!-- Bookmark Manager -->
+        <div class="bookmark-manager">
+            <h3>Your Bookmarked Repos & Gists</h3>
+            <div id="bookmarksList"></div>
+        </div>
     </footer>
 
     <!-- JavaScript File -->
