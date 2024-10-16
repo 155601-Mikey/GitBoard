@@ -255,6 +255,18 @@ footer a:hover {
     text-decoration: underline;
 }
 
+/* Bookmark Manager Styling */
+.bookmark-manager {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: var(--background-color);
+    border-radius: var(--border-radius);
+}
+
+.bookmark-manager h3 {
+    color: var(--primary-color);
+}
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
     .results, .featured {
