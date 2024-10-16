@@ -5,8 +5,10 @@ const searchInput = document.getElementById('searchInput');
 const expandSearchIcon = document.getElementById('expand-search-icon');
 const resultsContainer = document.getElementById('results');
 const featuredContainer = document.getElementById('featured');
+const customFeaturedRepos = document.getElementById('customFeaturedRepos');
 const searchType = document.getElementById('searchType');
 const languageFilter = document.getElementById('languageFilter');
+const sortFilter = document.getElementById('sortFilter');
 const starsFilter = document.getElementById('starsFilter');
 const forksFilter = document.getElementById('forksFilter');
 const issuesFilter = document.getElementById('issuesFilter');
@@ -15,6 +17,7 @@ const topicFilter = document.getElementById('topicFilter');
 const gitboardTitle = document.getElementById('gitboard-title');
 const toggleFiltersButton = document.getElementById('toggleFiltersButton');
 const filtersContainer = document.getElementById('filters');
+const filterIcon = document.getElementById('filterIcon');
 const skeletonLoaders = document.getElementById('skeletonLoaders');
 const loadingBar = document.getElementById('loadingBar');
 const loadingBarContainer = document.getElementById('loadingBarContainer');
@@ -41,16 +44,17 @@ function updateThemeIcon() {
     themeIcon.textContent = document.body.classList.contains('dark-mode') ? 'dark_mode' : 'light_mode';
 }
 
-// Toggle Filters Button
+// Toggle Filters Button with Icon
 toggleFiltersButton.addEventListener('click', () => {
     filtersContainer.classList.toggle('hidden');
-    toggleFiltersButton.textContent = filtersContainer.classList.contains('hidden') ? 'Show Filters' : 'Hide Filters';
+    filterIcon.textContent = filtersContainer.classList.contains('hidden') ? 'expand_more' : 'expand_less';
 });
 
 // GitBoard Title Click (Reset search and filters)
 gitboardTitle.addEventListener('click', () => {
     searchInput.value = '';
     languageFilter.value = 'none';
+    sortFilter.value = 'none';
     starsFilter.value = '';
     forksFilter.value = '';
     issuesFilter.value = '';
@@ -70,6 +74,7 @@ searchButton.addEventListener('click', () => executeSearch());
 searchInput.addEventListener('input', () => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(executeSearch, 1000);  // Debouncing with a 1-second delay
+    showSkeletonLoaders();  // Show skeleton loaders when typing
 });
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') executeSearch();
@@ -84,6 +89,9 @@ function executeSearch() {
     if (type === 'repo') {
         filtersContainer.classList.remove('hidden');  // Show filters for repo search
         searchRepos(query);
+    } else if (type === 'gist') {
+        filtersContainer.classList.add('hidden');  // Hide filters for gists search
+        searchGists(query);
     } else {
         filtersContainer.classList.add('hidden');  // Hide filters for user search
         searchUsers(query);
@@ -98,7 +106,8 @@ function searchRepos(query) {
     const issues = issuesFilter.value;
     const pushed = pushedFilter.value;
     const topic = topicFilter.value;
-    
+    const sort = sortFilter.value !== 'none' ? sortFilter.value : '';
+
     let url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}`;
     if (language) url += `+language:${encodeURIComponent(language)}`;
     if (stars) url += `+stars:>${stars}`;
@@ -106,16 +115,32 @@ function searchRepos(query) {
     if (issues) url += `+open_issues:>${issues}`;
     if (pushed) url += `+pushed:>${pushed}`;
     if (topic) url += `+topic:${encodeURIComponent(topic)}`;
+    if (sort) url += `&sort=${sort}`;
 
     showLoadingBar();
-    showSkeletonLoaders();
-    
     fetch(url)
         .then(res => res.json())
         .then(data => {
             hideLoadingBar();
             hideSkeletonLoaders();
             displayRepoResults(data.items);
+        })
+        .catch(err => {
+            console.error('GitHub API error:', err);
+            hideLoadingBar();
+            hideSkeletonLoaders();
+        });
+}
+
+// Gist Search Functionality
+function searchGists(query) {
+    showLoadingBar();
+    fetch(`https://api.github.com/search/gists?q=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(data => {
+            hideLoadingBar();
+            hideSkeletonLoaders();
+            displayGistResults(data.items);
         })
         .catch(err => {
             console.error('GitHub API error:', err);
@@ -154,8 +179,35 @@ function displayRepoResults(results) {
                 <span>${result.forks_count} Forks</span> •
                 <span>${result.watchers_count} Watchers</span>
             </div>
+            <p>Creator: <img src="${result.owner.avatar_url}" class="profile-picture small-pic"> ${result.owner.login}</p>
             <a href="${result.html_url}" target="_blank" class="button">View Repo on GitHub</a>
             ${pagesLink}
+        `;
+        resultsContainer.appendChild(item);
+    });
+}
+
+// Display Gist Results
+function displayGistResults(gists) {
+    resultsContainer.innerHTML = '';
+    if (!gists || gists.length === 0) {
+        resultsContainer.innerHTML = '<p>No gists found.</p>';
+        return;
+    }
+
+    gists.forEach(gist => {
+        const item = document.createElement('div');
+        item.className = 'result-item';
+
+        const ownerProfilePic = `<img src="${gist.owner.avatar_url}" alt="${gist.owner.login} Profile Picture" class="profile-picture">`;
+
+        item.innerHTML = `
+            ${ownerProfilePic}
+            <h3>${gist.description || 'No description available'}</h3>
+            <p><strong>Files:</strong> ${Object.keys(gist.files).join(', ')}</p>
+            <p><strong>Created:</strong> ${new Date(gist.created_at).toLocaleDateString()}</p>
+            <p><strong>Updated:</strong> ${new Date(gist.updated_at).toLocaleDateString()}</p>
+            <a href="${gist.html_url}" target="_blank" class="button">View Gist on GitHub</a>
         `;
         resultsContainer.appendChild(item);
     });
@@ -164,8 +216,6 @@ function displayRepoResults(results) {
 // User Search Functionality
 function searchUsers(query) {
     showLoadingBar();
-    showSkeletonLoaders();
-
     fetch(`https://api.github.com/search/users?q=${encodeURIComponent(query)}`)
         .then(res => res.json())
         .then(data => {
@@ -199,24 +249,36 @@ function displayUserResults(users) {
             ${profilePic}
             <h3>${user.login}</h3>
             <a href="${user.html_url}" target="_blank" class="button">View Profile on GitHub</a>
-            <button class="expand-repos">Show Repos</button>
+            <button class="expand-repos button">
+                <span class="material-icons">folder_open</span> Show Repos
+            </button>
             <div class="user-repos hidden"></div>
         `;
         
         // Add functionality to load user repos
-        item.querySelector('.expand-repos').addEventListener('click', () => {
-            fetch(`https://api.github.com/users/${user.login}/repos`)
-                .then(res => res.json())
-                .then(repos => {
-                    const repoContainer = item.querySelector('.user-repos');
-                    repoContainer.innerHTML = '';
-                    repoContainer.classList.toggle('hidden');
-                    repos.forEach(repo => {
-                        repoContainer.innerHTML += `<p><a href="${repo.html_url}" target="_blank"><span class="material-icons">code</span> ${repo.name}</a></p>`;
+        const toggleReposButton = item.querySelector('.expand-repos');
+        const repoContainer = item.querySelector('.user-repos');
+        let isReposVisible = false;
+
+        toggleReposButton.addEventListener('click', () => {
+            if (isReposVisible) {
+                repoContainer.classList.add('hidden');
+                toggleReposButton.innerHTML = `<span class="material-icons">folder_open</span> Show Repos`;
+            } else {
+                fetch(`https://api.github.com/users/${user.login}/repos`)
+                    .then(res => res.json())
+                    .then(repos => {
+                        repoContainer.innerHTML = '';
+                        repoContainer.classList.remove('hidden');
+                        repos.forEach(repo => {
+                            repoContainer.innerHTML += `<p><a href="${repo.html_url}" target="_blank"><span class="material-icons">code</span> ${repo.name}</a></p>`;
+                        });
+                        toggleReposButton.innerHTML = `<span class="material-icons">folder_open</span> Hide Repos (${repos.length})`;
                     });
-                });
+            }
+            isReposVisible = !isReposVisible;
         });
-        
+
         resultsContainer.appendChild(item);
     });
 }
@@ -244,18 +306,20 @@ function hideSkeletonLoaders() {
     skeletonLoaders.classList.add('hidden');
 }
 
-// Load Featured Repos (Fix duplication issue)
+// Load Featured Repos (with customization support)
 function loadFeaturedRepos() {
     fetch('https://api.github.com/repositories')
         .then(res => res.json())
         .then(data => {
             featuredContainer.innerHTML = ''; // Clear previous featured repos
+            customFeaturedRepos.innerHTML = ''; // Clear customizable featured repos
             const mostVisited = data.slice(0, 3);  // Mock for "most visited"
             const recentlyCreated = data
                 .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
                 .filter(repo => !mostVisited.some(r => r.id === repo.id))
                 .slice(0, 3);
             
+            // Add default featured repos
             [...mostVisited, ...recentlyCreated].forEach(repo => {
                 const item = document.createElement('div');
                 item.className = 'featured-item';
@@ -266,6 +330,17 @@ function loadFeaturedRepos() {
                 `;
                 featuredContainer.appendChild(item);
             });
+
+            // Add customization option for featured repos
+            const customRepos = prompt('Enter the names of featured repos, separated by commas (e.g., react, vue, angular):');
+            if (customRepos) {
+                customRepos.split(',').forEach(repoName => {
+                    const customRepoItem = document.createElement('div');
+                    customRepoItem.className = 'featured-item';
+                    customRepoItem.innerHTML = `<h3>${repoName.trim()}</h3>`;
+                    customFeaturedRepos.appendChild(customRepoItem);
+                });
+            }
         })
         .catch(err => console.error('Error fetching featured repos:', err));
 }
