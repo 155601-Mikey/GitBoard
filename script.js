@@ -341,3 +341,4 @@ function loadFeaturedRepos() {
 
 // Load featured repos on page load
 loadFeaturedRepos();
+                
