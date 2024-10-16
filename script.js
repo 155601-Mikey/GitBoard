@@ -8,31 +8,28 @@ const featuredContainer = document.getElementById('featured');
 const searchType = document.getElementById('searchType');
 const languageFilter = document.getElementById('languageFilter');
 const sortFilter = document.getElementById('sortFilter');
-const starsFilter = document.getElementById('starsFilter');
-const forksFilter = document.getElementById('forksFilter');
-const issuesFilter = document.getElementById('issuesFilter');
-const pushedFilter = document.getElementById('pushedFilter');
-const topicFilter = document.getElementById('topicFilter');
 const gitboardTitle = document.getElementById('gitboard-title');
 const toggleFiltersButton = document.getElementById('toggleFiltersButton');
 const filtersContainer = document.getElementById('filters');
 const filterIcon = document.getElementById('filterIcon');
-const skeletonLoaders = document.getElementById('skeletonLoaders');
-const loadingBar = document.getElementById('loadingBar');
 const loadingBarContainer = document.getElementById('loadingBarContainer');
+const loadingBar = document.getElementById('loadingBar');
 let debounceTimer;
+let bookmarks = JSON.parse(localStorage.getItem('gitboardBookmarks')) || []; // Initialize bookmarks
 
-// Load Theme
+// Load Theme with Dark Mode Sync
 document.body.classList.toggle('dark-mode', localStorage.getItem('darkMode') === 'true');
 updateThemeIcon();
+if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    document.body.classList.add('dark-mode');
+}
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+    const isDarkMode = event.matches;
+    document.body.classList.toggle('dark-mode', isDarkMode);
+    updateThemeIcon();
+});
 
-// Theme Switcher (Change pointer style on hover)
-themeIcon.addEventListener('mouseover', () => {
-    document.body.style.cursor = 'pointer';
-});
-themeIcon.addEventListener('mouseleave', () => {
-    document.body.style.cursor = 'default';
-});
+// Theme Switcher
 themeIcon.addEventListener('click', () => {
     const isDarkMode = document.body.classList.toggle('dark-mode');
     localStorage.setItem('darkMode', isDarkMode);
@@ -54,11 +51,6 @@ gitboardTitle.addEventListener('click', () => {
     searchInput.value = '';
     languageFilter.value = 'none';
     sortFilter.value = 'none';
-    starsFilter.value = '';
-    forksFilter.value = '';
-    issuesFilter.value = '';
-    pushedFilter.value = '';
-    topicFilter.value = '';
     resultsContainer.innerHTML = '';
     loadFeaturedRepos();
 });
@@ -68,17 +60,18 @@ expandSearchIcon.addEventListener('click', () => {
     searchInput.focus();
 });
 
-// Search Event Listeners with Debouncing
+// Search Event Listeners with Debouncing and Loading Bar
 searchButton.addEventListener('click', () => executeSearch());
 searchInput.addEventListener('input', () => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(executeSearch, 1000);  // Debouncing with a 1-second delay
-    showSkeletonLoaders();  // Show skeleton loaders when typing
+    showLoadingBar();  // Show loading bar when typing
 });
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') executeSearch();
 });
 
+// Search Functionality
 function executeSearch() {
     const query = searchInput.value.trim();
     const type = searchType.value;
@@ -86,13 +79,13 @@ function executeSearch() {
     if (!query) return;
     
     if (type === 'repo') {
-        filtersContainer.classList.remove('hidden');  // Show filters for repo search
+        filtersContainer.classList.remove('hidden');
         searchRepos(query);
     } else if (type === 'gist') {
-        filtersContainer.classList.add('hidden');  // Hide filters for gists search
+        filtersContainer.classList.add('hidden');
         searchGists(query);
     } else {
-        filtersContainer.classList.add('hidden');  // Hide filters for user search
+        filtersContainer.classList.add('hidden');
         searchUsers(query);
     }
 }
@@ -100,20 +93,10 @@ function executeSearch() {
 // Repo Search Functionality
 function searchRepos(query) {
     const language = languageFilter.value !== 'none' ? languageFilter.value : '';
-    const stars = starsFilter.value;
-    const forks = forksFilter.value;
-    const issues = issuesFilter.value;
-    const pushed = pushedFilter.value;
-    const topic = topicFilter.value;
     const sort = sortFilter.value !== 'none' ? sortFilter.value : '';
 
     let url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}`;
     if (language) url += `+language:${encodeURIComponent(language)}`;
-    if (stars) url += `+stars:>${stars}`;
-    if (forks) url += `+forks:>${forks}`;
-    if (issues) url += `+open_issues:>${issues}`;
-    if (pushed) url += `+pushed:>${pushed}`;
-    if (topic) url += `+topic:${encodeURIComponent(topic)}`;
     if (sort) url += `&sort=${sort}`;
 
     showLoadingBar();
@@ -121,13 +104,11 @@ function searchRepos(query) {
         .then(res => res.json())
         .then(data => {
             hideLoadingBar();
-            hideSkeletonLoaders();
             displayRepoResults(data.items);
         })
         .catch(err => {
             console.error('GitHub API error:', err);
             hideLoadingBar();
-            hideSkeletonLoaders();
         });
 }
 
@@ -138,17 +119,15 @@ function searchGists(query) {
         .then(res => res.json())
         .then(data => {
             hideLoadingBar();
-            hideSkeletonLoaders();
             displayGistResults(data);
         })
         .catch(err => {
             console.error('GitHub API error:', err);
             hideLoadingBar();
-            hideSkeletonLoaders();
         });
 }
 
-// Display Repo Results
+// Display Repo Results with Bookmarking
 function displayRepoResults(results) {
     resultsContainer.innerHTML = '';
     if (!results || results.length === 0) {
@@ -159,34 +138,33 @@ function displayRepoResults(results) {
     results.forEach(result => {
         const item = document.createElement('div');
         item.className = 'result-item';
-        
-        // GitHub Pages Link (if available)
-        let pagesLink = '';
-        if (result.has_pages && result.homepage) {
-            pagesLink = `<a href="${result.homepage}" target="_blank" class="button">View GitHub Pages</a>`;
-        }
 
-        // Include owner profile picture above the repo name
-        const ownerProfilePic = `<img src="${result.owner.avatar_url}" alt="${result.owner.login} Profile Picture" class="profile-picture">`;
+        // Bookmarking logic
+        const isBookmarked = bookmarks.some(b => b.id === result.id);
+        const bookmarkIcon = isBookmarked ? 'star' : 'star_outline';
 
+        // Repo HTML
         item.innerHTML = `
-            ${ownerProfilePic}
             <h3>${result.name}</h3>
-            <p>${result.description.length > 200 ? result.description.substring(0, 200) + '...' : result.description || 'No description available'}</p>
-            <div class="stats">
-                <span>${result.stargazers_count} Stars</span> •
-                <span>${result.forks_count} Forks</span> •
-                <span>${result.watchers_count} Watchers</span>
-            </div>
-            <p>Creator: <img src="${result.owner.avatar_url}" class="profile-picture small-pic"> ${result.owner.login}</p>
+            <p>${result.description || 'No description available'}</p>
+            <button class="bookmark-button">
+                <span class="material-icons">${bookmarkIcon}</span>
+            </button>
             <a href="${result.html_url}" target="_blank" class="button">View Repo on GitHub</a>
-            ${pagesLink}
         `;
+
+        // Bookmarking functionality
+        const bookmarkButton = item.querySelector('.bookmark-button');
+        bookmarkButton.addEventListener('click', () => {
+            toggleBookmark(result);
+            bookmarkButton.querySelector('.material-icons').textContent = isBookmarked ? 'star_outline' : 'star';
+        });
+
         resultsContainer.appendChild(item);
     });
 }
 
-// Display Gist Results (with download functionality)
+// Display Gist Results with Bookmarking
 function displayGistResults(gists) {
     resultsContainer.innerHTML = '';
     if (!gists || gists.length === 0) {
@@ -198,25 +176,39 @@ function displayGistResults(gists) {
         const item = document.createElement('div');
         item.className = 'result-item';
 
-        const ownerProfilePic = `<img src="${gist.owner.avatar_url}" alt="${gist.owner.login} Profile Picture" class="profile-picture">`;
+        // Bookmarking logic
+        const isBookmarked = bookmarks.some(b => b.id === gist.id);
+        const bookmarkIcon = isBookmarked ? 'star' : 'star_outline';
 
-        // Create download links for each file in the Gist
-        let filesList = '';
-        for (const file in gist.files) {
-            filesList += `<a href="${gist.files[file].raw_url}" target="_blank" download="${file}" class="button">Download ${file}</a><br>`;
-        }
-
+        // Gist HTML
         item.innerHTML = `
-            ${ownerProfilePic}
             <h3>${gist.description || 'No description available'}</h3>
-            <p><strong>Files:</strong> ${Object.keys(gist.files).join(', ')}</p>
-            <p><strong>Created:</strong> ${new Date(gist.created_at).toLocaleDateString()}</p>
-            <p><strong>Updated:</strong> ${new Date(gist.updated_at).toLocaleDateString()}</p>
-            ${filesList}
+            <button class="bookmark-button">
+                <span class="material-icons">${bookmarkIcon}</span>
+            </button>
             <a href="${gist.html_url}" target="_blank" class="button">View Gist on GitHub</a>
         `;
+
+        // Bookmarking functionality
+        const bookmarkButton = item.querySelector('.bookmark-button');
+        bookmarkButton.addEventListener('click', () => {
+            toggleBookmark(gist);
+            bookmarkButton.querySelector('.material-icons').textContent = isBookmarked ? 'star_outline' : 'star';
+        });
+
         resultsContainer.appendChild(item);
     });
+}
+
+// Toggle Bookmark Functionality
+function toggleBookmark(item) {
+    const existingBookmark = bookmarks.find(b => b.id === item.id);
+    if (existingBookmark) {
+        bookmarks = bookmarks.filter(b => b.id !== item.id);
+    } else {
+        bookmarks.push(item);
+    }
+    localStorage.setItem('gitboardBookmarks', JSON.stringify(bookmarks));
 }
 
 // User Search Functionality
@@ -226,17 +218,15 @@ function searchUsers(query) {
         .then(res => res.json())
         .then(data => {
             hideLoadingBar();
-            hideSkeletonLoaders();
             displayUserResults(data.items);
         })
         .catch(err => {
             console.error('GitHub API error:', err);
             hideLoadingBar();
-            hideSkeletonLoaders();
         });
 }
 
-// Display User Results with Repo Links
+// Display User Results with Contributions
 function displayUserResults(users) {
     resultsContainer.innerHTML = '';
     if (!users || users.length === 0) {
@@ -248,42 +238,45 @@ function displayUserResults(users) {
         const item = document.createElement('div');
         item.className = 'result-item';
 
-        // Include profile picture
         const profilePic = `<img src="${user.avatar_url}" alt="${user.login} Profile Picture" class="profile-picture">`;
-        
+
         item.innerHTML = `
             ${profilePic}
             <h3>${user.login}</h3>
+            <p>Contributions: <span id="contributions-${user.login}">Loading...</span></p>
             <a href="${user.html_url}" target="_blank" class="button">View Profile on GitHub</a>
             <button class="expand-repos button">
                 <span class="material-icons">folder_open</span> Show Repos
             </button>
             <div class="user-repos hidden"></div>
         `;
-        
-        // Add functionality to load user repos
+
         const toggleReposButton = item.querySelector('.expand-repos');
         const repoContainer = item.querySelector('.user-repos');
         let isReposVisible = false;
 
-        toggleReposButton.addEventListener('click', () => {
-            if (isReposVisible) {
-                repoContainer.classList.add('hidden');
-                toggleReposButton.innerHTML = `<span class="material-icons">folder_open</span> Show Repos`;
-            } else {
-                fetch(`https://api.github.com/users/${user.login}/repos`)
-                    .then(res => res.json())
-                    .then(repos => {
+        // Fetch Contributions and Repos
+        fetch(`https://api.github.com/users/${user.login}/repos`)
+            .then(res => res.json())
+            .then(repos => {
+                const contributions = repos.reduce((total, repo) => total + repo.contributors_count, 0);
+                document.getElementById(`contributions-${user.login}`).textContent = contributions;
+
+                toggleReposButton.addEventListener('click', () => {
+                    if (isReposVisible) {
+                        repoContainer.classList.add('hidden');
+                        toggleReposButton.innerHTML = `<span class="material-icons">folder_open</span> Show Repos`;
+                    } else {
                         repoContainer.innerHTML = '';
                         repoContainer.classList.remove('hidden');
                         repos.forEach(repo => {
                             repoContainer.innerHTML += `<p><a href="${repo.html_url}" target="_blank"><span class="material-icons">code</span> ${repo.name}</a></p>`;
                         });
                         toggleReposButton.innerHTML = `<span class="material-icons">folder_open</span> Hide Repos (${repos.length})`;
-                    });
-            }
-            isReposVisible = !isReposVisible;
-        });
+                    }
+                    isReposVisible = !isReposVisible;
+                });
+            });
 
         resultsContainer.appendChild(item);
     });
@@ -301,15 +294,6 @@ function hideLoadingBar() {
         loadingBarContainer.classList.add('hidden');
         loadingBar.style.width = '0%';
     }, 500);
-}
-
-// Show and Hide Skeleton Loaders
-function showSkeletonLoaders() {
-    skeletonLoaders.classList.remove('hidden');
-}
-
-function hideSkeletonLoaders() {
-    skeletonLoaders.classList.add('hidden');
 }
 
 // Load Featured Repos
@@ -341,4 +325,3 @@ function loadFeaturedRepos() {
 
 // Load featured repos on page load
 loadFeaturedRepos();
-                
