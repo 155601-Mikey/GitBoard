@@ -130,6 +130,10 @@ body.dark-mode {
     margin-top: 20px;
 }
 
+.filters.hidden {
+    display: none;
+}
+
 .filters label {
     display: flex;
     align-items: center;
