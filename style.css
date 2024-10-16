@@ -18,6 +18,7 @@ body {
     --text-color: #333;
     --primary-color: #4fc3f7;
     --secondary-color: #81c784;
+    --red-color: #e57373;
     --border-radius: 15px;
 }
 
@@ -39,7 +40,7 @@ body.dark-mode {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* Buttons (Report Bug) */
+/* Buttons */
 .header-buttons {
     display: flex;
     gap: 15px;
@@ -49,7 +50,6 @@ body.dark-mode {
     display: flex;
     align-items: center;
     color: white;
-    background-color: var(--primary-color);
     padding: 10px 15px;
     border-radius: var(--border-radius);
     text-decoration: none;
@@ -58,6 +58,14 @@ body.dark-mode {
 
 .btn:hover {
     background-color: var(--secondary-color);
+}
+
+.red-btn {
+    background-color: var(--red-color);
+}
+
+.red-btn:hover {
+    background-color: darkred;
 }
 
 .btn .material-icons {
@@ -107,6 +115,10 @@ body.dark-mode {
 
 .toggle-filters-button:hover {
     background-color: var(--secondary-color);
+}
+
+#filterIcon {
+    vertical-align: middle;
 }
 
 /* Filters Section with Icons (side-by-side layout) */
