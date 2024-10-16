@@ -14,12 +14,14 @@ body {
 
 /* Color variables */
 :root {
-    --background-color: #fdfdfd;
+    --background-color: #f0fdf4;
     --text-color: #333;
     --primary-color: #4fc3f7;
     --secondary-color: #81c784;
     --red-color: #e57373;
-    --purple-color: #9c27b0;
+    --purple-color: #8e44ad;
+    --greenish-color: #16a085;
+    --bluish-color: #3498db;
     --border-radius: 15px;
 }
 
@@ -30,7 +32,7 @@ body.dark-mode {
 
 /* Gradient Buttons */
 button, .button {
-    background: linear-gradient(45deg, #4fc3f7, #9c27b0);
+    background: linear-gradient(45deg, #16a085, #3498db);
     color: white;
     border: none;
     border-radius: var(--border-radius);
@@ -41,7 +43,7 @@ button, .button {
 }
 
 button:hover, .button:hover {
-    background: linear-gradient(45deg, #81c784, #e57373);
+    background: linear-gradient(45deg, #81c784, #4fc3f7);
     transform: scale(1.05);
 }
 
@@ -89,7 +91,7 @@ button:hover, .button:hover {
 }
 
 .loading-bar {
-    background: linear-gradient(90deg, #81c784, #4fc3f7);
+    background: linear-gradient(90deg, #16a085, #3498db);
     width: 0%;
     height: 100%;
     transition: width 0.4s ease;
