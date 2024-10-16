@@ -24,7 +24,13 @@ let debounceTimer;
 document.body.classList.toggle('dark-mode', localStorage.getItem('darkMode') === 'true');
 updateThemeIcon();
 
-// Theme Switcher
+// Theme Switcher (Change pointer style on hover)
+themeIcon.addEventListener('mouseover', () => {
+    document.body.style.cursor = 'pointer';
+});
+themeIcon.addEventListener('mouseleave', () => {
+    document.body.style.cursor = 'default';
+});
 themeIcon.addEventListener('click', () => {
     const isDarkMode = document.body.classList.toggle('dark-mode');
     localStorage.setItem('darkMode', isDarkMode);
@@ -63,7 +69,7 @@ expandSearchIcon.addEventListener('click', () => {
 searchButton.addEventListener('click', () => executeSearch());
 searchInput.addEventListener('input', () => {
     clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(executeSearch, 500);  // Debouncing with a 500ms delay
+    debounceTimer = setTimeout(executeSearch, 1000);  // Debouncing with a 1-second delay
 });
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') executeSearch();
@@ -136,7 +142,7 @@ function displayRepoResults(results) {
             pagesLink = `<a href="${result.homepage}" target="_blank" class="button">View GitHub Pages</a>`;
         }
 
-        // Include owner profile picture
+        // Include owner profile picture above the repo name
         const ownerProfilePic = `<img src="${result.owner.avatar_url}" alt="${result.owner.login} Profile Picture" class="profile-picture">`;
 
         item.innerHTML = `
@@ -238,14 +244,17 @@ function hideSkeletonLoaders() {
     skeletonLoaders.classList.add('hidden');
 }
 
-// Load Featured Repos
+// Load Featured Repos (Fix duplication issue)
 function loadFeaturedRepos() {
     fetch('https://api.github.com/repositories')
         .then(res => res.json())
         .then(data => {
             featuredContainer.innerHTML = ''; // Clear previous featured repos
             const mostVisited = data.slice(0, 3);  // Mock for "most visited"
-            const recentlyCreated = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 3);
+            const recentlyCreated = data
+                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                .filter(repo => !mostVisited.some(r => r.id === repo.id))
+                .slice(0, 3);
             
             [...mostVisited, ...recentlyCreated].forEach(repo => {
                 const item = document.createElement('div');
