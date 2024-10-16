@@ -14,14 +14,11 @@ body {
 
 /* Color variables */
 :root {
-    --background-color: #f0fdf4;
+    --background-color: #fdfdfd;
     --text-color: #333;
     --primary-color: #4fc3f7;
     --secondary-color: #81c784;
     --red-color: #e57373;
-    --purple-color: #8e44ad;
-    --greenish-color: #16a085;
-    --bluish-color: #3498db;
     --border-radius: 15px;
 }
 
@@ -30,59 +27,192 @@ body.dark-mode {
     --text-color: #f5f5f5;
 }
 
-/* Gradient Buttons */
-button, .button {
-    background: linear-gradient(45deg, #16a085, #3498db);
-    color: white;
-    border: none;
-    border-radius: var(--border-radius);
-    padding: 10px 20px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.3s, background-color 0.3s;
-}
-
-button:hover, .button:hover {
-    background: linear-gradient(45deg, #81c784, #4fc3f7);
-    transform: scale(1.05);
-}
-
-/* Box Styles with Gradient */
-.result-item, .saved-item {
-    background: linear-gradient(135deg, rgba(0, 123, 255, 0.1), rgba(0, 255, 195, 0.1));
-    padding: 20px;
-    border-radius: var(--border-radius);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
-    transition: transform 0.3s;
-}
-
-.result-item:hover, .saved-item:hover {
-    transform: translateY(-5px);
-}
-
-/* Material Icons for Star (Bookmark) */
-.bookmark-button {
-    background-color: var(--purple-color);
-    border-radius: 50%;
-    padding: 10px;
-    color: white;
-    border: none;
-    cursor: pointer;
+/* Sticky Navbar */
+.navbar.glossy.sticky {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    transition: background-color 0.3s;
+    padding: 20px;
+    background: linear-gradient(145deg, rgba(0, 123, 255, 0.9), rgba(0, 255, 195, 0.9));
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-.bookmark-button:hover {
+/* Buttons */
+.header-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    color: white;
+    padding: 10px 15px;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: var(--secondary-color);
+}
+
+.red-btn {
     background-color: var(--red-color);
 }
 
-/* Gradient Loading Bar */
+.red-btn:hover {
+    background-color: darkred;
+}
+
+.btn .material-icons {
+    margin-right: 5px;
+}
+
+/* Search Bar Styling */
+.search-bar {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.search-type, .search-input, .search-button {
+    padding: 10px;
+    border-radius: var(--border-radius);
+    border: 1px solid #ccc;
+    margin: 0 10px;
+    font-size: 16px;
+}
+
+.search-button {
+    background-color: var(--secondary-color);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-button:hover {
+    background-color: var(--primary-color);
+}
+
+/* Toggle Filters Button */
+.toggle-filters-button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.toggle-filters-button:hover {
+    background-color: var(--secondary-color);
+}
+
+#filterIcon {
+    vertical-align: middle;
+}
+
+/* Filters Section with Icons (side-by-side layout) */
+.filters {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: nowrap;
+    margin-top: 20px;
+}
+
+.filters.hidden {
+    display: none;
+}
+
+.filters label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.filters select, .filters input {
+    padding: 10px;
+    border-radius: var(--border-radius);
+    border: 1px solid #ccc;
+    background-color: white;
+    transition: background-color 0.3s ease;
+}
+
+body.dark-mode .filters select, body.dark-mode .filters input {
+    background-color: #333;
+    color: white;
+}
+
+/* Dark mode text in boxes */
+.result-item, .featured-item {
+    background-color: white;
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, background-color 0.3s;
+    margin-bottom: 20px; /* Add space between items */
+}
+
+body.dark-mode .result-item, body.dark-mode .featured-item {
+    background-color: #333;
+    color: #f5f5f5;
+}
+
+.result-item:hover, .featured-item:hover {
+    transform: translateY(-4px); /* Slight hover effect (flying) */
+}
+
+/* Profile Picture Styling */
+.profile-picture {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+/* Grid Layout for Results (3 per row on larger screens) */
+.results {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+@media (min-width: 1024px) {
+    .results {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.button {
+    display: inline-block;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: var(--secondary-color);
+}
+
+/* Loading Bar */
 .loading-bar-container {
     display: none;
     width: 100%;
+    background-color: #e0e0e0;
     height: 5px;
     position: fixed;
     top: 0;
@@ -91,7 +221,7 @@ button:hover, .button:hover {
 }
 
 .loading-bar {
-    background: linear-gradient(90deg, #16a085, #3498db);
+    background-color: var(--primary-color);
     width: 0%;
     height: 100%;
     transition: width 0.4s ease;
@@ -125,9 +255,21 @@ footer a:hover {
     text-decoration: underline;
 }
 
+/* Bookmark Manager Styling */
+.bookmark-manager {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: var(--background-color);
+    border-radius: var(--border-radius);
+}
+
+.bookmark-manager h3 {
+    color: var(--primary-color);
+}
+
 /* Mobile responsiveness */
 @media (max-width: 768px) {
-    .results, .saved {
+    .results, .featured {
         grid-template-columns: 1fr; /* Stack results on mobile */
     }
 
