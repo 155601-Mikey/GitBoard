@@ -4,7 +4,6 @@ const searchButton = document.getElementById('searchButton');
 const searchInput = document.getElementById('searchInput');
 const expandSearchIcon = document.getElementById('expand-search-icon');
 const resultsContainer = document.getElementById('results');
-const featuredContainer = document.getElementById('featured');
 const searchType = document.getElementById('searchType');
 const languageFilter = document.getElementById('languageFilter');
 const tagFilter = document.getElementById('tagFilter');
@@ -33,6 +32,57 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', eve
     document.body.classList.toggle('dark-mode', isDarkMode);
     updateThemeIcon();
 });
+
+// Toggle Bookmark (Add/Remove from Saved List)
+
+function toggleBookmark(item) {
+
+    const existingBookmark = bookmarks.find(b => b.id === item.id);
+
+    if (existingBookmark) {
+
+        bookmarks = bookmarks.filter(b => b.id !== item.id);
+            } else {
+
+        bookmarks.push(item);
+
+    }
+
+    localStorage.setItem('gitboardBookmarks', JSON.stringify(bookmarks));
+
+    updateSavedList();
+    
+            bookmarkItem.className = 'saved-item';
+                   <h4>${bookmark.name || bookmark.description}</h4>
+
+                <a href="${bookmark.html_url}" target="_blank" class="button">View on GitHub</a>
+
+                <button class="bookmark-button remove-btn">
+
+                    <span class="material-icons">delete</span> Remove
+
+                </button>
+
+            `;
+
+            const removeButton = bookmarkItem.querySelector('.remove-btn');
+
+            removeButton.addEventListener('click', () => {
+
+                toggleBookmark(bookmark);
+
+            });
+
+            savedContainer.appendChild(bookmarkItem);
+
+        });
+
+    }
+
+}
+
+
+
 
 // Theme Switcher
 themeIcon.addEventListener('click', () => {
