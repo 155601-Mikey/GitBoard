@@ -111,7 +111,6 @@ gitboardTitle.addEventListener('click', () => {
     forksFilter.value = '';
     issuesFilter.value = '';
     resultsContainer.innerHTML = '';
-    loadFeaturedRepos();
 });
 
 // Search Icon Behavior (move cursor to search bar)
@@ -352,33 +351,4 @@ function hideLoadingBar() {
     }, 500);
 }
 
-// Load Featured Repos
-function loadFeaturedRepos() {
-    fetch('https://api.github.com/repositories')
-        .then(res => res.json())
-        .then(data => {
-            featuredContainer.innerHTML = ''; // Clear previous featured repos
-            const mostVisited = data.slice(0, 3);  // Mock for "most visited"
-            const recentlyCreated = data
-                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-                .filter(repo => !mostVisited.some(r => r.id === repo.id))
-                .slice(0, 3);
-            
-            // Add default featured repos
-            [...mostVisited, ...recentlyCreated].forEach(repo => {
-                const item = document.createElement('div');
-                item.className = 'featured-item';
-                item.innerHTML = `
-                    <h3>${repo.name}</h3>
-                    <p>${repo.description || 'No description available'}</p>
-                    <a href="${repo.html_url}" target="_blank" class="button">View Repo on GitHub</a>
-                `;
-                featuredContainer.appendChild(item);
-            });
-        })
-        .catch(err => console.error('Error fetching featured repos:', err));
-}
 
-// Load featured repos on page load
-loadFeaturedRepos();
-updateBookmarkManager(); // Load bookmarks on page load
