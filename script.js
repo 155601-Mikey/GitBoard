@@ -38,11 +38,11 @@ function toggleBookmark(item) {
     const bookmarkId = `${item.id}-${item.type || 'repo'}`; // Create a unique identifier
     const existingBookmark = bookmarks.find(b => b.id === bookmarkId);
     if (existingBookmark) {
-        bookmarks = bookmarks.filter(b => b.id !== bookmarkId);
+        bookmarks = bookmarks.filter(b => b.id !== bookmarkId); // Remove bookmark
     } else {
-        bookmarks.push({ ...item, id: bookmarkId });
+        bookmarks.push({ ...item, id: bookmarkId }); // Add bookmark
     }
-    localStorage.setItem('gitboardBookmarks', JSON.stringify(bookmarks));
+    localStorage.setItem('gitboardBookmarks', JSON.stringify(bookmarks)); // Persist bookmarks to localStorage
     updateBookmarkManager();
 }
 
@@ -63,7 +63,7 @@ function updateBookmarkManager() {
                 </button>
             `;
             const removeButton = bookmarkItem.querySelector('.remove-btn');
-            removeButton.addEventListener('click', () => toggleBookmark(bookmark));
+            removeButton.addEventListener('click', () => toggleBookmark(bookmark)); // Toggle removes bookmark
             bookmarksList.appendChild(bookmarkItem);
         });
     }
@@ -132,7 +132,7 @@ function executeSearch() {
         searchGists(query);
     } else {
         filtersContainer.classList.add('hidden');
-        searchUsers(query);
+        searchUsers(query);  // User search handling
     }
 }
 
@@ -158,7 +158,11 @@ function searchRepos(query) {
         .then(res => res.json())
         .then(data => {
             hideLoadingBar();
-            displayRepoResults(data.items);
+            if (data.items) {
+                displayRepoResults(data.items);
+            } else {
+                resultsContainer.innerHTML = '<p>No repositories found.</p>';
+            }
         })
         .catch(err => {
             console.error('GitHub API error:', err);
@@ -174,7 +178,11 @@ function searchGists(query) {
         .then(res => res.json())
         .then(data => {
             hideLoadingBar();
-            displayGistResults(data);
+            if (data) {
+                displayGistResults(data);
+            } else {
+                resultsContainer.innerHTML = '<p>No gists found.</p>';
+            }
         })
         .catch(err => {
             console.error('GitHub API error:', err);
@@ -199,13 +207,15 @@ function displayRepoResults(results) {
         const isBookmarked = bookmarks.some(b => b.id === `${result.id}-repo`);
         const bookmarkIcon = isBookmarked ? 'star' : 'star_outline';
 
-        // Repo HTML
+        // Repo HTML with website link (homepage) and GitHub link
+        const websiteLink = result.homepage ? `<a href="${result.homepage}" target="_blank" class="button">Website</a>` : '';
         item.innerHTML = `
             <h3>${result.name}</h3>
             <p>${result.description || 'No description available'}</p>
             <button class="bookmark-button">
                 <span class="material-icons">${bookmarkIcon}</span>
             </button>
+            ${websiteLink}
             <a href="${result.html_url}" target="_blank" class="button">View Repo on GitHub</a>
         `;
 
@@ -262,7 +272,27 @@ function displayGistResults(gists) {
     updateBookmarkManager();
 }
 
-// Display User Results
+// User Search Functionality
+function searchUsers(query) {
+    showLoadingBar();
+    fetch(`https://api.github.com/search/users?q=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(data => {
+            hideLoadingBar();
+            if (data.items && data.items.length > 0) {
+                displayUserResults(data.items);
+            } else {
+                resultsContainer.innerHTML = '<p>No users found.</p>';
+            }
+        })
+        .catch(err => {
+            console.error('GitHub API error:', err);
+            hideLoadingBar();
+            resultsContainer.innerHTML = '<p>Failed to load users. Please try again later.</p>';
+        });
+}
+
+// Display User Results with Collapsible Repositories
 function displayUserResults(users) {
     resultsContainer.innerHTML = '';
     if (!users || users.length === 0) {
@@ -280,10 +310,55 @@ function displayUserResults(users) {
             ${profilePic}
             <h3>${user.login}</h3>
             <a href="${user.html_url}" target="_blank" class="button">View Profile on GitHub</a>
+            <button class="toggle-repos-button">View Repos</button>
+            <div class="repos-container hidden"></div>
         `;
+
+        // Toggle Repositories Functionality
+        const toggleReposButton = item.querySelector('.toggle-repos-button');
+        const reposContainer = item.querySelector('.repos-container');
+        toggleReposButton.addEventListener('click', () => {
+            if (reposContainer.classList.contains('hidden')) {
+                fetchUserRepos(user.login, reposContainer); // Fetch repos only when expanded
+            }
+            reposContainer.classList.toggle('hidden');
+            toggleReposButton.textContent = reposContainer.classList.contains('hidden') ? 'View Repos' : 'Hide Repos';
+        });
 
         resultsContainer.appendChild(item);
     });
+}
+
+// Fetch User Repos for the Collapsible Menu
+function fetchUserRepos(username, container) {
+    showLoadingBar();
+    fetch(`https://api.github.com/users/${username}/repos`)
+        .then(res => res.json())
+        .then(repos => {
+            hideLoadingBar();
+            if (repos && repos.length > 0) {
+                container.innerHTML = ''; // Clear existing content
+                repos.forEach(repo => {
+                    const websiteLink = repo.homepage ? `<a href="${repo.homepage}" target="_blank" class="button">Website</a>` : '';
+                    const repoItem = `
+                        <div class="repo-item">
+                            <h4>${repo.name}</h4>
+                            <p>${repo.description || 'No description available'}</p>
+                            ${websiteLink}
+                            <a href="${repo.html_url}" target="_blank" class="button">Source Code</a>
+                        </div>
+                    `;
+                    container.innerHTML += repoItem;
+                });
+            } else {
+                container.innerHTML = '<p>No repositories found.</p>';
+            }
+        })
+        .catch(err => {
+            console.error('GitHub API error:', err);
+            hideLoadingBar();
+            container.innerHTML = '<p>Failed to load repositories. Please try again later.</p>';
+        });
 }
 
 // Show and Hide Loading Bar
