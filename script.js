@@ -34,55 +34,40 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', eve
 });
 
 // Toggle Bookmark (Add/Remove from Saved List)
-
 function toggleBookmark(item) {
-
-    const existingBookmark = bookmarks.find(b => b.id === item.id);
-
+    const bookmarkId = `${item.id}-${item.type || 'repo'}`; // Create a unique identifier
+    const existingBookmark = bookmarks.find(b => b.id === bookmarkId);
     if (existingBookmark) {
-
-        bookmarks = bookmarks.filter(b => b.id !== item.id);
-            } else {
-
-        bookmarks.push(item);
-
+        bookmarks = bookmarks.filter(b => b.id !== bookmarkId);
+    } else {
+        bookmarks.push({ ...item, id: bookmarkId });
     }
-
     localStorage.setItem('gitboardBookmarks', JSON.stringify(bookmarks));
-
-    updateSavedList();
-    
-            bookmarkItem.className = 'saved-item';
-                   <h4>${bookmark.name || bookmark.description}</h4>
-
-                <a href="${bookmark.html_url}" target="_blank" class="button">View on GitHub</a>
-
-                <button class="bookmark-button remove-btn">
-
-                    <span class="material-icons">delete</span> Remove
-
-                </button>
-
-            `;
-
-            const removeButton = bookmarkItem.querySelector('.remove-btn');
-
-            removeButton.addEventListener('click', () => {
-
-                toggleBookmark(bookmark);
-
-            });
-
-            savedContainer.appendChild(bookmarkItem);
-
-        });
-
-    }
-
+    updateBookmarkManager();
 }
 
-
-
+// Update Bookmark Manager
+function updateBookmarkManager() {
+    bookmarksList.innerHTML = '';
+    if (bookmarks.length === 0) {
+        bookmarksList.innerHTML = '<p>No bookmarks yet.</p>';
+    } else {
+        bookmarks.forEach(bookmark => {
+            const bookmarkItem = document.createElement('div');
+            bookmarkItem.className = 'saved-item';
+            bookmarkItem.innerHTML = `
+                <h4>${bookmark.name || bookmark.description}</h4>
+                <a href="${bookmark.html_url}" target="_blank" class="button">View on GitHub</a>
+                <button class="bookmark-button remove-btn">
+                    <span class="material-icons">delete</span> Remove
+                </button>
+            `;
+            const removeButton = bookmarkItem.querySelector('.remove-btn');
+            removeButton.addEventListener('click', () => toggleBookmark(bookmark));
+            bookmarksList.appendChild(bookmarkItem);
+        });
+    }
+}
 
 // Theme Switcher
 themeIcon.addEventListener('click', () => {
@@ -121,9 +106,9 @@ expandSearchIcon.addEventListener('click', () => {
 // Search Event Listeners with Debouncing and Loading Bar
 searchButton.addEventListener('click', () => executeSearch());
 searchInput.addEventListener('input', () => {
+    showLoadingBar();  // Show loading bar as soon as user starts typing
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(executeSearch, 1000);  // Debouncing with a 1-second delay
-    showLoadingBar();  // Show loading bar when typing
 });
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') executeSearch();
@@ -133,9 +118,12 @@ searchInput.addEventListener('keypress', (e) => {
 function executeSearch() {
     const query = searchInput.value.trim();
     const type = searchType.value;
-    
-    if (!query) return;
-    
+
+    if (!query) {
+        resultsContainer.innerHTML = '<p>Please enter a search term.</p>';
+        return;
+    }
+
     if (type === 'repo') {
         filtersContainer.classList.remove('hidden');
         searchRepos(query);
@@ -175,6 +163,7 @@ function searchRepos(query) {
         .catch(err => {
             console.error('GitHub API error:', err);
             hideLoadingBar();
+            resultsContainer.innerHTML = '<p>Failed to load results. Please try again later.</p>';
         });
 }
 
@@ -190,6 +179,7 @@ function searchGists(query) {
         .catch(err => {
             console.error('GitHub API error:', err);
             hideLoadingBar();
+            resultsContainer.innerHTML = '<p>Failed to load results. Please try again later.</p>';
         });
 }
 
@@ -206,7 +196,7 @@ function displayRepoResults(results) {
         item.className = 'result-item';
 
         // Bookmarking logic
-        const isBookmarked = bookmarks.some(b => b.id === result.id);
+        const isBookmarked = bookmarks.some(b => b.id === `${result.id}-repo`);
         const bookmarkIcon = isBookmarked ? 'star' : 'star_outline';
 
         // Repo HTML
@@ -222,8 +212,9 @@ function displayRepoResults(results) {
         // Bookmarking functionality
         const bookmarkButton = item.querySelector('.bookmark-button');
         bookmarkButton.addEventListener('click', () => {
-            toggleBookmark(result);
-            bookmarkButton.querySelector('.material-icons').textContent = isBookmarked ? 'star_outline' : 'star';
+            toggleBookmark({ ...result, type: 'repo' });
+            const newStatus = bookmarks.some(b => b.id === `${result.id}-repo`) ? 'star' : 'star_outline';
+            bookmarkButton.querySelector('.material-icons').textContent = newStatus;
         });
 
         resultsContainer.appendChild(item);
@@ -245,7 +236,7 @@ function displayGistResults(gists) {
         item.className = 'result-item';
 
         // Bookmarking logic
-        const isBookmarked = bookmarks.some(b => b.id === gist.id);
+        const isBookmarked = bookmarks.some(b => b.id === `${gist.id}-gist`);
         const bookmarkIcon = isBookmarked ? 'star' : 'star_outline';
 
         // Gist HTML
@@ -260,57 +251,15 @@ function displayGistResults(gists) {
         // Bookmarking functionality
         const bookmarkButton = item.querySelector('.bookmark-button');
         bookmarkButton.addEventListener('click', () => {
-            toggleBookmark(gist);
-            bookmarkButton.querySelector('.material-icons').textContent = isBookmarked ? 'star_outline' : 'star';
+            toggleBookmark({ ...gist, type: 'gist' });
+            const newStatus = bookmarks.some(b => b.id === `${gist.id}-gist`) ? 'star' : 'star_outline';
+            bookmarkButton.querySelector('.material-icons').textContent = newStatus;
         });
 
         resultsContainer.appendChild(item);
     });
 
     updateBookmarkManager();
-}
-
-// Toggle Bookmark Functionality
-function toggleBookmark(item) {
-    const existingBookmark = bookmarks.find(b => b.id === item.id);
-    if (existingBookmark) {
-        bookmarks = bookmarks.filter(b => b.id !== item.id);
-    } else {
-        bookmarks.push(item);
-    }
-    localStorage.setItem('gitboardBookmarks', JSON.stringify(bookmarks));
-    updateBookmarkManager();
-}
-
-// Update Bookmark Manager
-function updateBookmarkManager() {
-    bookmarksList.innerHTML = '';
-    if (bookmarks.length === 0) {
-        bookmarksList.innerHTML = '<p>No bookmarks yet.</p>';
-    } else {
-        bookmarks.forEach(bookmark => {
-            const bookmarkItem = document.createElement('div');
-            bookmarkItem.innerHTML = `
-                <p><a href="${bookmark.html_url}" target="_blank">${bookmark.name || bookmark.description}</a></p>
-            `;
-            bookmarksList.appendChild(bookmarkItem);
-        });
-    }
-}
-
-// User Search Functionality
-function searchUsers(query) {
-    showLoadingBar();
-    fetch(`https://api.github.com/search/users?q=${encodeURIComponent(query)}`)
-        .then(res => res.json())
-        .then(data => {
-            hideLoadingBar();
-            displayUserResults(data.items);
-        })
-        .catch(err => {
-            console.error('GitHub API error:', err);
-            hideLoadingBar();
-        });
 }
 
 // Display User Results
@@ -325,7 +274,7 @@ function displayUserResults(users) {
         const item = document.createElement('div');
         item.className = 'result-item';
 
-        const profilePic = `<img src="${user.avatar_url}" alt="${user.login} Profile Picture" class="profile-picture">`;
+        const profilePic = `<img src="${user.avatar_url}" alt="${user.login}'s profile picture" class="profile-picture">`;
 
         item.innerHTML = `
             ${profilePic}
@@ -345,10 +294,6 @@ function showLoadingBar() {
 }
 
 function hideLoadingBar() {
-    setTimeout(() => {
-        loadingBarContainer.classList.add('hidden');
-        loadingBar.style.width = '0%';
-    }, 500);
+    loadingBarContainer.classList.add('hidden');
+    loadingBar.style.width = '0%';
 }
-
-
