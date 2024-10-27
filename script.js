@@ -10,6 +10,7 @@ const tagFilter = document.getElementById('tagFilter');
 const sortFilter = document.getElementById('sortFilter');
 const starsFilter = document.getElementById('starsFilter');
 const forksFilter = document.getElementById('forksFilter');
+const watchersFilter = document.getElementById('watchersFilter');  // New filter
 const issuesFilter = document.getElementById('issuesFilter');
 const gitboardTitle = document.getElementById('gitboard-title');
 const toggleFiltersButton = document.getElementById('toggleFiltersButton');
@@ -18,8 +19,12 @@ const filterIcon = document.getElementById('filterIcon');
 const loadingBarContainer = document.getElementById('loadingBarContainer');
 const loadingBar = document.getElementById('loadingBar');
 const bookmarksList = document.getElementById('bookmarksList');
+const searchHistoryContainer = document.getElementById('searchHistoryContainer'); // Container for search history
+
 let debounceTimer;
+let currentPage = 1;  // For infinite scrolling
 let bookmarks = JSON.parse(localStorage.getItem('gitboardBookmarks')) || [];
+let searchHistory = JSON.parse(localStorage.getItem('gitboardSearchHistory')) || [];
 
 // Load Theme with Dark Mode Sync
 document.body.classList.toggle('dark-mode', localStorage.getItem('darkMode') === 'true');
@@ -88,25 +93,56 @@ toggleFiltersButton.addEventListener('click', () => {
 
 // GitBoard Title Click (Reset search and filters)
 gitboardTitle.addEventListener('click', () => {
+    resetSearch();
+    resultsContainer.innerHTML = '';
+});
+
+// Reset Search and Filters
+function resetSearch() {
     searchInput.value = '';
     languageFilter.value = 'none';
     tagFilter.value = '';
     sortFilter.value = 'none';
     starsFilter.value = '';
     forksFilter.value = '';
+    watchersFilter.value = '';  // Reset watchers filter
     issuesFilter.value = '';
-    resultsContainer.innerHTML = '';
-});
+}
 
 // Search Icon Behavior (move cursor to search bar)
 expandSearchIcon.addEventListener('click', () => {
     searchInput.focus();
 });
 
+// Save Search History
+function saveSearchHistory(query) {
+    if (!searchHistory.includes(query)) {
+        searchHistory.push(query);
+        if (searchHistory.length > 5) searchHistory.shift();  // Limit to last 5 searches
+        localStorage.setItem('gitboardSearchHistory', JSON.stringify(searchHistory));
+    }
+    updateSearchHistory();
+}
+
+// Update Search History Display
+function updateSearchHistory() {
+    searchHistoryContainer.innerHTML = '';
+    searchHistory.forEach(term => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'search-history-item';
+        historyItem.textContent = term;
+        historyItem.addEventListener('click', () => {
+            searchInput.value = term;
+            executeSearch();
+        });
+        searchHistoryContainer.appendChild(historyItem);
+    });
+}
+
 // Search Event Listeners with Debouncing and Loading Bar
 searchButton.addEventListener('click', () => executeSearch());
 searchInput.addEventListener('input', () => {
-    showLoadingBar();  // Show loading bar as soon as user starts typing
+    showLoadingBar();
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(executeSearch, 1000);  // Debouncing with a 1-second delay
 });
@@ -114,8 +150,20 @@ searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') executeSearch();
 });
 
+// Infinite Scroll Handler
+window.addEventListener('scroll', () => {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 100) {
+        loadMoreResults();
+    }
+});
+
+function loadMoreResults() {
+    currentPage++;
+    executeSearch(true);  // Pass true to append results
+}
+
 // Search Functionality
-function executeSearch() {
+function executeSearch(appendResults = false) {
     const query = searchInput.value.trim();
     const type = searchType.value;
 
@@ -124,25 +172,27 @@ function executeSearch() {
         return;
     }
 
+    saveSearchHistory(query);
+
     if (type === 'repo') {
         filtersContainer.classList.remove('hidden');
-        searchRepos(query);
+        searchRepos(query, appendResults);
     } else if (type === 'gist') {
         filtersContainer.classList.add('hidden');
-        searchGists(query);
+        searchGists(query, appendResults);
     } else {
         filtersContainer.classList.add('hidden');
-        searchUsers(query);
+        searchUsers(query, appendResults);
     }
 }
 
-// Repo Search Functionality with Tag Support
-function searchRepos(query) {
+// Repo Search with Infinite Scroll and Filters
+function searchRepos(query, appendResults = false) {
     const language = languageFilter.value !== 'none' ? languageFilter.value : '';
     const tag = tagFilter.value.trim();
     const stars = starsFilter.value;
     const forks = forksFilter.value;
-    const issues = issuesFilter.value;
+    const watchers = watchersFilter.value; // New filter
     const sort = sortFilter.value !== 'none' ? sortFilter.value : '';
 
     let url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}`;
@@ -150,8 +200,9 @@ function searchRepos(query) {
     if (tag) url += `+topic:${encodeURIComponent(tag)}`;
     if (stars) url += `+stars:>${stars}`;
     if (forks) url += `+forks:>${forks}`;
-    if (issues) url += `+open_issues:>${issues}`;
+    if (watchers) url += `+watchers:>${watchers}`; // Add watchers filter
     if (sort) url += `&sort=${sort}`;
+    url += `&page=${currentPage}&per_page=10`; // Add pagination parameters
 
     showLoadingBar();
     fetch(url)
@@ -159,21 +210,22 @@ function searchRepos(query) {
         .then(data => {
             hideLoadingBar();
             if (data.items) {
-                displayRepoResults(data.items);
-            } else {
+                displayRepoResults(data.items, appendResults);
+            } else if (!appendResults) {
                 resultsContainer.innerHTML = '<p>No repositories found.</p>';
             }
         })
         .catch(err => {
             console.error('GitHub API error:', err);
             hideLoadingBar();
-            resultsContainer.innerHTML = '<p>Failed to load results. Please try again later.</p>';
+            if (!appendResults) resultsContainer.innerHTML = '<p>Failed to load results. Please try again later.</p>';
         });
 }
 
 // Display Repo Results with Stats and Bookmarking
-function displayRepoResults(results) {
-    resultsContainer.innerHTML = '';
+function displayRepoResults(results, appendResults = false) {
+    if (!appendResults) resultsContainer.innerHTML = ''; // Clear if not appending
+
     if (!results || results.length === 0) {
         resultsContainer.innerHTML = '<p>No results found.</p>';
         return;
@@ -214,46 +266,6 @@ function displayRepoResults(results) {
     updateBookmarkManager();
 }
 
-// Display Gist Results with Bookmarking
-function displayGistResults(gists) {
-    resultsContainer.innerHTML = '';
-    if (!gists || gists.length === 0) {
-        resultsContainer.innerHTML = '<p>No gists found.</p>';
-        return;
-    }
-
-    gists.forEach(gist => {
-        const item = document.createElement('div');
-        item.className = 'result-item';
-
-        // Bookmarking logic
-        const isBookmarked = bookmarks.some(b => b.id === `${gist.id}-gist`);
-        const bookmarkIcon = isBookmarked ? 'star' : 'star_outline';
-
-        // Gist HTML
-        item.innerHTML = `
-            <h3>${gist.description || 'No description available'}</h3>
-            <button class="bookmark-button">
-                <span class="material-icons">${bookmarkIcon}</span>
-            </button>
-            <a href="${gist.html_url}" target="_blank" class="button">View Gist on GitHub</a>
-            <p class="repo-stats">Created by <a href="${gist.owner.html_url}" target="_blank">${gist.owner.login}</a></p>
-        `;
-
-        // Bookmarking functionality
-        const bookmarkButton = item.querySelector('.bookmark-button');
-        bookmarkButton.addEventListener('click', () => {
-            toggleBookmark({ ...gist, type: 'gist' });
-            const newStatus = bookmarks.some(b => b.id === `${gist.id}-gist`) ? 'star' : 'star_outline';
-            bookmarkButton.querySelector('.material-icons').textContent = newStatus;
-        });
-
-        resultsContainer.appendChild(item);
-    });
-
-    updateBookmarkManager();
-}
-
 // Show and Hide Loading Bar
 function showLoadingBar() {
     loadingBarContainer.classList.remove('hidden');
@@ -267,5 +279,8 @@ function hideLoadingBar() {
 }
 
 // Initial Bookmark Load
-document.addEventListener('DOMContentLoaded', updateBookmarkManager);
+document.addEventListener('DOMContentLoaded', () => {
+    updateBookmarkManager();
+    updateSearchHistory();
+});
 
