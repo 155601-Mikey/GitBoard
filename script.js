@@ -10,7 +10,7 @@ const tagFilter = document.getElementById('tagFilter');
 const sortFilter = document.getElementById('sortFilter');
 const starsFilter = document.getElementById('starsFilter');
 const forksFilter = document.getElementById('forksFilter');
-const watchersFilter = document.getElementById('watchersFilter');  // New filter
+const watchersFilter = document.getElementById('watchersFilter');
 const issuesFilter = document.getElementById('issuesFilter');
 const gitboardTitle = document.getElementById('gitboard-title');
 const toggleFiltersButton = document.getElementById('toggleFiltersButton');
@@ -19,10 +19,10 @@ const filterIcon = document.getElementById('filterIcon');
 const loadingBarContainer = document.getElementById('loadingBarContainer');
 const loadingBar = document.getElementById('loadingBar');
 const bookmarksList = document.getElementById('bookmarksList');
-const searchHistoryContainer = document.getElementById('searchHistoryContainer'); // Container for search history
+const searchHistoryContainer = document.getElementById('searchHistoryContainer');
 
 let debounceTimer;
-let currentPage = 1;  // For infinite scrolling
+let currentPage = 1;
 let bookmarks = JSON.parse(localStorage.getItem('gitboardBookmarks')) || [];
 let searchHistory = JSON.parse(localStorage.getItem('gitboardSearchHistory')) || [];
 
@@ -43,11 +43,11 @@ function toggleBookmark(item) {
     const bookmarkId = `${item.id}-${item.type || 'repo'}`;
     const existingBookmark = bookmarks.find(b => b.id === bookmarkId);
     if (existingBookmark) {
-        bookmarks = bookmarks.filter(b => b.id !== bookmarkId); // Remove bookmark
+        bookmarks = bookmarks.filter(b => b.id !== bookmarkId);
     } else {
-        bookmarks.push({ ...item, id: bookmarkId }); // Add bookmark
+        bookmarks.push({ ...item, id: bookmarkId });
     }
-    localStorage.setItem('gitboardBookmarks', JSON.stringify(bookmarks)); // Persist bookmarks to localStorage
+    localStorage.setItem('gitboardBookmarks', JSON.stringify(bookmarks));
     updateBookmarkManager();
 }
 
@@ -105,20 +105,15 @@ function resetSearch() {
     sortFilter.value = 'none';
     starsFilter.value = '';
     forksFilter.value = '';
-    watchersFilter.value = '';  // Reset watchers filter
+    watchersFilter.value = '';
     issuesFilter.value = '';
 }
-
-// Search Icon Behavior (move cursor to search bar)
-expandSearchIcon.addEventListener('click', () => {
-    searchInput.focus();
-});
 
 // Save Search History
 function saveSearchHistory(query) {
     if (!searchHistory.includes(query)) {
         searchHistory.push(query);
-        if (searchHistory.length > 5) searchHistory.shift();  // Limit to last 5 searches
+        if (searchHistory.length > 5) searchHistory.shift();
         localStorage.setItem('gitboardSearchHistory', JSON.stringify(searchHistory));
     }
     updateSearchHistory();
@@ -144,7 +139,7 @@ searchButton.addEventListener('click', () => executeSearch());
 searchInput.addEventListener('input', () => {
     showLoadingBar();
     clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(executeSearch, 1000);  // Debouncing with a 1-second delay
+    debounceTimer = setTimeout(executeSearch, 1000);
 });
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') executeSearch();
@@ -159,7 +154,7 @@ window.addEventListener('scroll', () => {
 
 function loadMoreResults() {
     currentPage++;
-    executeSearch(true);  // Pass true to append results
+    executeSearch(true);
 }
 
 // Search Functionality
@@ -192,7 +187,7 @@ function searchRepos(query, appendResults = false) {
     const tag = tagFilter.value.trim();
     const stars = starsFilter.value;
     const forks = forksFilter.value;
-    const watchers = watchersFilter.value; // New filter
+    const watchers = watchersFilter.value;
     const sort = sortFilter.value !== 'none' ? sortFilter.value : '';
 
     let url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}`;
@@ -200,9 +195,9 @@ function searchRepos(query, appendResults = false) {
     if (tag) url += `+topic:${encodeURIComponent(tag)}`;
     if (stars) url += `+stars:>${stars}`;
     if (forks) url += `+forks:>${forks}`;
-    if (watchers) url += `+watchers:>${watchers}`; // Add watchers filter
+    if (watchers) url += `+watchers:>${watchers}`;
     if (sort) url += `&sort=${sort}`;
-    url += `&page=${currentPage}&per_page=10`; // Add pagination parameters
+    url += `&page=${currentPage}&per_page=10`;
 
     showLoadingBar();
     fetch(url)
@@ -210,6 +205,11 @@ function searchRepos(query, appendResults = false) {
         .then(data => {
             hideLoadingBar();
             if (data.items) {
+                // Ensure "GitBoard" repository appears first in results if queried
+                const gitboardRepo = data.items.find(repo => repo.name.toLowerCase() === 'gitboard');
+                if (gitboardRepo) {
+                    data.items = [gitboardRepo, ...data.items.filter(repo => repo.id !== gitboardRepo.id)];
+                }
                 displayRepoResults(data.items, appendResults);
             } else if (!appendResults) {
                 resultsContainer.innerHTML = '<p>No repositories found.</p>';
@@ -222,9 +222,9 @@ function searchRepos(query, appendResults = false) {
         });
 }
 
-// Display Repo Results with Stats and Bookmarking
+// Display Repo Results with Styled Info and Bookmarking
 function displayRepoResults(results, appendResults = false) {
-    if (!appendResults) resultsContainer.innerHTML = ''; // Clear if not appending
+    if (!appendResults) resultsContainer.innerHTML = '';
 
     if (!results || results.length === 0) {
         resultsContainer.innerHTML = '<p>No results found.</p>';
@@ -235,11 +235,9 @@ function displayRepoResults(results, appendResults = false) {
         const item = document.createElement('div');
         item.className = 'result-item';
 
-        // Bookmarking logic
         const isBookmarked = bookmarks.some(b => b.id === `${result.id}-repo`);
         const bookmarkIcon = isBookmarked ? 'star' : 'star_outline';
 
-        // Repo HTML with website link (homepage), GitHub link, and stats
         const websiteLink = result.homepage ? `<a href="${result.homepage}" target="_blank" class="button">Website</a>` : '';
         item.innerHTML = `
             <h3>${result.name}</h3>
@@ -249,10 +247,9 @@ function displayRepoResults(results, appendResults = false) {
             </button>
             ${websiteLink}
             <a href="${result.html_url}" target="_blank" class="button">View Repo on GitHub</a>
-            <p class="repo-stats">⭐ ${result.stargazers_count} • 🍴 ${result.forks_count} • 👀 ${result.watchers_count} • Created by <a href="${result.owner.html_url}" target="_blank">${result.owner.login}</a></p>
+            <p class="repo-stats" style="color: blue;">Stars: ${result.stargazers_count} • Forks: ${result.forks_count} • Watchers: ${result.watchers_count} • Created by <a href="${result.owner.html_url}" target="_blank" style="color: blue;">${result.owner.login}</a></p>
         `;
 
-        // Bookmarking functionality
         const bookmarkButton = item.querySelector('.bookmark-button');
         bookmarkButton.addEventListener('click', () => {
             toggleBookmark({ ...result, type: 'repo' });
@@ -264,6 +261,85 @@ function displayRepoResults(results, appendResults = false) {
     });
 
     updateBookmarkManager();
+}
+
+// User Profile Search and Display
+function searchUsers(query, appendResults = false) {
+    showLoadingBar();
+    fetch(`https://api.github.com/search/users?q=${encodeURIComponent(query)}`)
+        .then(res => res.json())
+        .then(data => {
+            hideLoadingBar();
+            if (data.items && data.items.length > 0) {
+                displayUserResults(data.items, appendResults);
+            } else {
+                resultsContainer.innerHTML = '<p>No users found.</p>';
+            }
+        })
+        .catch(err => {
+            console.error('GitHub API error:', err);
+            hideLoadingBar();
+            resultsContainer.innerHTML = '<p>Failed to load users. Please try again later.</p>';
+        });
+}
+
+function displayUserResults(users, appendResults = false) {
+    if (!appendResults) resultsContainer.innerHTML = '';
+
+    users.forEach(user => {
+        const item = document.createElement('div');
+        item.className = 'result-item';
+
+        item.innerHTML = `
+            <h3>${user.login}</h3>
+            <a href="${user.html_url}" target="_blank" class="button">View Profile on GitHub</a>
+            <button class="view-repos-button">View Repositories</button>
+            <div class="user-repos-container hidden"></div>
+        `;
+
+        const viewReposButton = item.querySelector('.view-repos-button');
+        const reposContainer = item.querySelector('.user-repos-container');
+
+        viewReposButton.addEventListener('click', () => {
+            if (reposContainer.classList.contains('hidden')) {
+                fetchUserRepos(user.login, reposContainer);
+            }
+            reposContainer.classList.toggle('hidden');
+            viewReposButton.textContent = reposContainer.classList.contains('hidden') ? 'View Repositories' : 'Hide Repositories';
+        });
+
+        resultsContainer.appendChild(item);
+    });
+}
+
+function fetchUserRepos(username, container) {
+    showLoadingBar();
+    fetch(`https://api.github.com/users/${username}/repos`)
+        .then(res => res.json())
+        .then(repos => {
+            hideLoadingBar();
+            if (repos && repos.length > 0) {
+                container.innerHTML = '';
+                repos.forEach(repo => {
+                    const websiteLink = repo.homepage ? `<a href="${repo.homepage}" target="_blank" class="button">Website</a>` : '';
+                    container.innerHTML += `
+                        <div class="repo-item">
+                            <h4>${repo.name}</h4>
+                            <p>${repo.description || 'No description available'}</p>
+                            ${websiteLink}
+                            <a href="${repo.html_url}" target="_blank" class="button">Source Code</a>
+                        </div>
+                    `;
+                });
+            } else {
+                container.innerHTML = '<p>No repositories found.</p>';
+            }
+        })
+        .catch(err => {
+            console.error('GitHub API error:', err);
+            hideLoadingBar();
+            container.innerHTML = '<p>Failed to load repositories. Please try again later.</p>';
+        });
 }
 
 // Show and Hide Loading Bar
@@ -278,9 +354,8 @@ function hideLoadingBar() {
     loadingBar.style.width = '0%';
 }
 
-// Initial Bookmark Load
+// Initial Bookmark and History Load
 document.addEventListener('DOMContentLoaded', () => {
     updateBookmarkManager();
     updateSearchHistory();
 });
-
