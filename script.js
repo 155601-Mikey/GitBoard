@@ -26,21 +26,40 @@ let currentPage = 1;
 let bookmarks = JSON.parse(localStorage.getItem('gitboardBookmarks')) || [];
 let searchHistory = JSON.parse(localStorage.getItem('gitboardSearchHistory')) || [];
 
-// Load Theme with Dark Mode Sync
-document.body.classList.toggle('dark-mode', localStorage.getItem('darkMode') === 'true');
+// Initialize Theme
+const storedTheme = localStorage.getItem('darkMode');
+const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+document.body.classList.toggle('dark-mode', storedTheme === 'true' || (!storedTheme && prefersDarkScheme.matches));
 updateThemeIcon();
-if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    document.body.classList.add('dark-mode');
-}
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
-    const isDarkMode = event.matches;
-    document.body.classList.toggle('dark-mode', isDarkMode);
+
+prefersDarkScheme.addEventListener('change', event => {
+    document.body.classList.toggle('dark-mode', event.matches);
     updateThemeIcon();
 });
 
+// Helper Functions
+function getBookmarkId(item) {
+    return `${item.id}-${item.type || 'repo'}`;
+}
+
+function fetchFromGitHub(url) {
+    showLoadingBar();
+    return fetch(url)
+        .then(res => res.json())
+        .catch(err => {
+            console.error('GitHub API error:', err);
+            resultsContainer.innerHTML = '<p>Failed to load data. Please try again later.</p>';
+        })
+        .finally(hideLoadingBar);
+}
+
+function updateThemeIcon() {
+    themeIcon.textContent = document.body.classList.contains('dark-mode') ? 'dark_mode' : 'light_mode';
+}
+
 // Toggle Bookmark (Add/Remove from Saved List)
 function toggleBookmark(item) {
-    const bookmarkId = `${item.id}-${item.type || 'repo'}`;
+    const bookmarkId = getBookmarkId(item);
     const existingBookmark = bookmarks.find(b => b.id === bookmarkId);
     if (existingBookmark) {
         bookmarks = bookmarks.filter(b => b.id !== bookmarkId);
@@ -80,10 +99,6 @@ themeIcon.addEventListener('click', () => {
     localStorage.setItem('darkMode', isDarkMode);
     updateThemeIcon();
 });
-
-function updateThemeIcon() {
-    themeIcon.textContent = document.body.classList.contains('dark-mode') ? 'dark_mode' : 'light_mode';
-}
 
 // Toggle Filters Button with Icon
 toggleFiltersButton.addEventListener('click', () => {
@@ -134,16 +149,17 @@ function updateSearchHistory() {
     });
 }
 
-// Search Event Listeners with Debouncing and Loading Bar
-searchButton.addEventListener('click', () => executeSearch());
-searchInput.addEventListener('input', () => {
-    showLoadingBar();
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(executeSearch, 1000);
-});
-searchInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') executeSearch();
-});
+// Unified Search Input Handler with Debounce
+function handleSearchInput(e) {
+    if (e.type === 'click' || e.key === 'Enter' || e.type === 'input') {
+        showLoadingBar();
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(executeSearch, 1000);
+    }
+}
+searchButton.addEventListener('click', handleSearchInput);
+searchInput.addEventListener('input', handleSearchInput);
+searchInput.addEventListener('keypress', handleSearchInput);
 
 // Infinite Scroll Handler
 window.addEventListener('scroll', () => {
@@ -160,15 +176,13 @@ function loadMoreResults() {
 // Search Functionality
 function executeSearch(appendResults = false) {
     const query = searchInput.value.trim();
-    const type = searchType.value;
-
     if (!query) {
         resultsContainer.innerHTML = '<p>Please enter a search term.</p>';
         return;
     }
-
     saveSearchHistory(query);
 
+    const type = searchType.value;
     if (type === 'repo') {
         filtersContainer.classList.remove('hidden');
         searchRepos(query, appendResults);
@@ -181,7 +195,7 @@ function executeSearch(appendResults = false) {
     }
 }
 
-// Repo Search with Infinite Scroll and Filters
+// Repo Search with Filters
 function searchRepos(query, appendResults = false) {
     const language = languageFilter.value !== 'none' ? languageFilter.value : '';
     const tag = tagFilter.value.trim();
@@ -199,33 +213,18 @@ function searchRepos(query, appendResults = false) {
     if (sort) url += `&sort=${sort}`;
     url += `&page=${currentPage}&per_page=10`;
 
-    showLoadingBar();
-    fetch(url)
-        .then(res => res.json())
-        .then(data => {
-            hideLoadingBar();
-            if (data.items) {
-                // Ensure "GitBoard" repository appears first in results if queried
-                const gitboardRepo = data.items.find(repo => repo.name.toLowerCase() === 'gitboard');
-                if (gitboardRepo) {
-                    data.items = [gitboardRepo, ...data.items.filter(repo => repo.id !== gitboardRepo.id)];
-                }
-                displayRepoResults(data.items, appendResults);
-            } else if (!appendResults) {
-                resultsContainer.innerHTML = '<p>No repositories found.</p>';
-            }
-        })
-        .catch(err => {
-            console.error('GitHub API error:', err);
-            hideLoadingBar();
-            if (!appendResults) resultsContainer.innerHTML = '<p>Failed to load results. Please try again later.</p>';
-        });
+    fetchFromGitHub(url).then(data => {
+        if (data && data.items) {
+            displayRepoResults(data.items, appendResults);
+        } else if (!appendResults) {
+            resultsContainer.innerHTML = '<p>No repositories found.</p>';
+        }
+    });
 }
 
-// Display Repo Results with Styled Info and Bookmarking
+// Display Repo Results
 function displayRepoResults(results, appendResults = false) {
     if (!appendResults) resultsContainer.innerHTML = '';
-
     if (!results || results.length === 0) {
         resultsContainer.innerHTML = '<p>No results found.</p>';
         return;
@@ -235,7 +234,7 @@ function displayRepoResults(results, appendResults = false) {
         const item = document.createElement('div');
         item.className = 'result-item';
 
-        const isBookmarked = bookmarks.some(b => b.id === `${result.id}-repo`);
+        const isBookmarked = bookmarks.some(b => b.id === getBookmarkId(result));
         const bookmarkIcon = isBookmarked ? 'star' : 'star_outline';
 
         const websiteLink = result.homepage ? `<a href="${result.homepage}" target="_blank" class="button">Website</a>` : '';
@@ -253,7 +252,7 @@ function displayRepoResults(results, appendResults = false) {
         const bookmarkButton = item.querySelector('.bookmark-button');
         bookmarkButton.addEventListener('click', () => {
             toggleBookmark({ ...result, type: 'repo' });
-            const newStatus = bookmarks.some(b => b.id === `${result.id}-repo`) ? 'star' : 'star_outline';
+            const newStatus = bookmarks.some(b => b.id === getBookmarkId(result)) ? 'star' : 'star_outline';
             bookmarkButton.querySelector('.material-icons').textContent = newStatus;
         });
 
@@ -263,90 +262,12 @@ function displayRepoResults(results, appendResults = false) {
     updateBookmarkManager();
 }
 
-// User Profile Search and Display
-function searchUsers(query, appendResults = false) {
-    showLoadingBar();
-    fetch(`https://api.github.com/search/users?q=${encodeURIComponent(query)}`)
-        .then(res => res.json())
-        .then(data => {
-            hideLoadingBar();
-            if (data.items && data.items.length > 0) {
-                displayUserResults(data.items, appendResults);
-            } else {
-                resultsContainer.innerHTML = '<p>No users found.</p>';
-            }
-        })
-        .catch(err => {
-            console.error('GitHub API error:', err);
-            hideLoadingBar();
-            resultsContainer.innerHTML = '<p>Failed to load users. Please try again later.</p>';
-        });
-}
-
-function displayUserResults(users, appendResults = false) {
-    if (!appendResults) resultsContainer.innerHTML = '';
-
-    users.forEach(user => {
-        const item = document.createElement('div');
-        item.className = 'result-item';
-
-        item.innerHTML = `
-            <h3>${user.login}</h3>
-            <a href="${user.html_url}" target="_blank" class="button">View Profile on GitHub</a>
-            <button class="view-repos-button">View Repositories</button>
-            <div class="user-repos-container hidden"></div>
-        `;
-
-        const viewReposButton = item.querySelector('.view-repos-button');
-        const reposContainer = item.querySelector('.user-repos-container');
-
-        viewReposButton.addEventListener('click', () => {
-            if (reposContainer.classList.contains('hidden')) {
-                fetchUserRepos(user.login, reposContainer);
-            }
-            reposContainer.classList.toggle('hidden');
-            viewReposButton.textContent = reposContainer.classList.contains('hidden') ? 'View Repositories' : 'Hide Repositories';
-        });
-
-        resultsContainer.appendChild(item);
-    });
-}
-
-function fetchUserRepos(username, container) {
-    showLoadingBar();
-    fetch(`https://api.github.com/users/${username}/repos`)
-        .then(res => res.json())
-        .then(repos => {
-            hideLoadingBar();
-            if (repos && repos.length > 0) {
-                container.innerHTML = '';
-                repos.forEach(repo => {
-                    const websiteLink = repo.homepage ? `<a href="${repo.homepage}" target="_blank" class="button">Website</a>` : '';
-                    container.innerHTML += `
-                        <div class="repo-item">
-                            <h4>${repo.name}</h4>
-                            <p>${repo.description || 'No description available'}</p>
-                            ${websiteLink}
-                            <a href="${repo.html_url}" target="_blank" class="button">Source Code</a>
-                        </div>
-                    `;
-                });
-            } else {
-                container.innerHTML = '<p>No repositories found.</p>';
-            }
-        })
-        .catch(err => {
-            console.error('GitHub API error:', err);
-            hideLoadingBar();
-            container.innerHTML = '<p>Failed to load repositories. Please try again later.</p>';
-        });
-}
-
-// Show and Hide Loading Bar
+// Loading Bar Control
 function showLoadingBar() {
     loadingBarContainer.classList.remove('hidden');
     loadingBar.style.width = '0%';
-    setTimeout(() => loadingBar.style.width = '100%', 100);
+    setTimeout(() => loadingBar.style.width = '50%', 200);
+    setTimeout(() => loadingBar.style.width = '100%', 400);
 }
 
 function hideLoadingBar() {
@@ -354,7 +275,7 @@ function hideLoadingBar() {
     loadingBar.style.width = '0%';
 }
 
-// Initial Bookmark and History Load
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     updateBookmarkManager();
     updateSearchHistory();
