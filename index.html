@@ -7,6 +7,7 @@
     <!-- Google Fonts and Material Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
     <!-- CSS Styles -->
     <link rel="stylesheet" href="style.css">
 </head>
@@ -19,18 +20,32 @@
         <!-- Bug Report Button -->
         <div class="header-buttons">
             <a href="https://github.com/155601-Mikey/GitBoard/issues" target="_blank" class="btn red-btn">
-                <span class="material-icons">bug_report</span> Report Bug
+                <lord-icon
+                    src="https://cdn.lordicon.com/keaiyjcx.json"
+                    trigger="hover"
+                    colors="primary:#ffffff"
+                    style="width:25px;height:25px">
+                </lord-icon> Report Bug
             </a>
         </div>
 
         <!-- Expanding Search Icon and Theme Switcher -->
         <div class="quick-access">
             <!-- Expanding Search Box -->
-            <span class="material-icons" id="expand-search-icon">search</span>
+                <lord-icon
+                    src="https://cdn.lordicon.com/fkdzyfle.json"
+                    trigger="hover"
+                    style="width:25px;height:25px">
+                </lord-icon>
 
             <!-- Theme Switcher -->
             <div class="theme-switcher">
-                <span class="material-icons" id="theme-icon">light_mode</span>
+                <lord-icon
+                    src="https://cdn.lordicon.com/dupxuoaa.json"
+                    trigger="hover"
+                    colors="primary:#ffffff"
+                    style="width:25px;height:25px">
+                </lord-icon>
             </div>
         </div>
     </header>
@@ -50,13 +65,23 @@
             </select>
             <input type="text" id="searchInput" maxlength="200" placeholder="Search GitHub repos, users, gists, or by tags..." class="search-input">
             <button id="searchButton" class="search-button">
-                <span class="material-icons">search</span>
+                <lord-icon
+                    src="https://cdn.lordicon.com/fkdzyfle.json"
+                    trigger="hover"
+                    colors="primary:#ffffff"
+                    style="width:25px;height:25px">
+                </lord-icon>
             </button>
         </div>
 
         <!-- Toggle Filter Button -->
         <button id="toggleFiltersButton" class="toggle-filters-button">
-            <span class="material-icons" id="filterIcon">expand_more</span> Toggle Filters
+            <lord-icon
+                    src="https://cdn.lordicon.com/ygnmvgzy.json"
+                    trigger="hover"
+                    colors="primary:#ffffff"
+                    style="width:25px;height:25px">
+                </lord-icon> Toggle Filters
         </button>
 
         <!-- Filters Section (hidden for user search or gists) -->
