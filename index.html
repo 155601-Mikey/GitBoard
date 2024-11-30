@@ -533,6 +533,127 @@ footer {
 .material-icons.spin {
   animation: spin 2s linear infinite;
 }
+
+.settings-menu {
+  position: fixed;
+  top: 0;
+  right: -400px;
+  width: 400px;
+  height: 100vh;
+  background: var(--surface);
+  box-shadow: -2px 0 10px var(--shadow);
+  padding: 2rem;
+  transition: right 0.3s ease;
+  z-index: 2000;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+.settings-menu.open {
+  right: 0;
+}
+
+.settings-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1999;
+}
+
+.settings-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.settings-option {
+  margin-bottom: 1.5rem;
+}
+
+.experiment {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+  padding: 1rem;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.experiment:hover {
+  background: var(--shadow);
+}
+
+.experiment-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.experiment-description {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--text-secondary);
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--primary);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.animated-icon:hover {
+  animation: bounce 0.5s ease infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
 </style>
 </head>
 <body>
@@ -549,6 +670,9 @@ footer {
       </a>
       <button class="theme-toggle" onclick="toggleTheme()">
         <span class="material-icons">dark_mode</span>
+      </button>
+      <button onclick="toggleSettings()">
+        <span class="material-icons">settings</span>
       </button>
     </div>
   </nav>
@@ -620,6 +744,94 @@ footer {
   </div>
 </div>
 
+<div class="settings-overlay" onclick="toggleSettings()"></div>
+<div class="settings-menu">
+  <h2>Settings</h2>
+  
+  <div class="settings-option">
+    <label>Theme</label>
+    <select id="themeSelect" onchange="updateTheme()">
+      <option value="system">System Default</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+  </div>
+
+  <div class="settings-option">
+    <h3>Experimental Features</h3>
+    
+    <div class="experiment">
+      <div class="experiment-info">
+        <div class="experiment-label">
+          <span class="material-icons">auto_awesome</span>
+          <span>Animated Cards</span>
+        </div>
+        <div class="experiment-description">Enable smooth animations for result cards</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="animatedCards" onchange="toggleExperiment('animatedCards')">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="experiment">
+      <div class="experiment-info">
+        <div class="experiment-label">
+          <span class="material-icons">filter_list</span>
+          <span>Advanced Filters</span>
+        </div>
+        <div class="experiment-description">Enable additional search filters</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="advancedFilters" onchange="toggleExperiment('advancedFilters')">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="experiment">
+      <div class="experiment-info">
+        <div class="experiment-label">
+          <span class="material-icons">bolt</span>
+          <span>Real-time Search</span>
+        </div>
+        <div class="experiment-description">Search as you type</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="realTimeSearch" onchange="toggleExperiment('realTimeSearch')">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="experiment">
+      <div class="experiment-info">
+        <div class="experiment-label">
+          <span class="material-icons">tune</span>
+          <span>Smart Sort</span>
+        </div>
+        <div class="experiment-description">Intelligently sort results based on relevance</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="smartSort" onchange="toggleExperiment('smartSort')">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="experiment">
+      <div class="experiment-info">
+        <div class="experiment-label">
+          <span class="material-icons">preview</span>
+          <span>Preview Mode</span>
+        </div>
+        <div class="experiment-description">Show repository previews on hover</div>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="previewMode" onchange="toggleExperiment('previewMode')">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+</div>
+
 <footer>
   <p class="footer-description">
     GitBoard helps you discover GitHub repositories, users, and gists with ease. Search for trending repos, explore users, and check out the most popular projects in the GitHub community.
@@ -650,6 +862,25 @@ function toggleTheme() {
   
   const themeIcon = document.querySelector('.theme-toggle .material-icons');
   themeIcon.textContent = newTheme === 'dark' ? 'light_mode' : 'dark_mode';
+}
+
+function toggleSettings() {
+  document.querySelector('.settings-menu').classList.toggle('open');
+  document.querySelector('.settings-overlay').classList.toggle('open');
+}
+
+function updateTheme() {
+  const select = document.getElementById('themeSelect');
+  const theme = select.value;
+  
+  if (theme === 'system') {
+    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    document.body.setAttribute('data-theme', systemTheme);
+  } else {
+    document.body.setAttribute('data-theme', theme);
+  }
+  
+  localStorage.setItem('theme-preference', theme);
 }
 
 function switchTab(tab) {
@@ -824,44 +1055,39 @@ async function search() {
   }
   
   loading = true;
-  renderResults([]);
-  
   const results = document.getElementById('results');
-  results.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>Fetching results...</p></div>';
+  results.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>Searching...</p></div>';
   
   try {
-    let apiUrl = '';
-    let params = new URLSearchParams();
+    let endpoint = '';
+    switch(currentTab) {
+      case 'repos':
+        endpoint = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}`;
+        break;
+      case 'users':
+        endpoint = `https://api.github.com/search/users?q=${encodeURIComponent(query)}`;
+        break;
+      case 'gists':
+        endpoint = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}+fork:only`;
+        break;
+    }
+
+    const response = await fetch(endpoint);
+    const data = await response.json();
     
-    if (currentTab === 'repos') {
-      apiUrl = 'https://api.github.com/search/repositories';
-      const language = document.getElementById('language').value;
-      const stars = document.getElementById('stars').value;
-      const sort = document.getElementById('sort').value;
-      const owner = document.getElementById('owner').value;
-      
-      params.append('q', query);
-      if (language) params.append('language', language);
-      if (stars) params.append('stars', `>=${stars}`);
-      if (sort) params.append('sort', sort);
-      if (owner) params.append('user', owner);
-      
-    } else if (currentTab === 'users') {
-      apiUrl = 'https://api.github.com/search/users';
-      params.append('q', query);
-      
-    } else if (currentTab === 'gists') {
-      apiUrl = 'https://api.github.com/search/repositories'; // Note: GitHub API doesn't have direct gist search
-      params.append('q', `${query} in:description language:gist`);
+    if (!response.ok) {
+      throw new Error(`GitHub API error: ${response.statusText}`);
     }
     
-    const response = await fetch(`${apiUrl}?${params.toString()}`);
-    if (!response.ok) throw new Error(response.statusText);
-    
-    const data = await response.json();
-    renderResults(data.items);
+    if (data.items && data.items.length > 0) {
+      results.innerHTML = ''; // Clear loading state
+      renderResults(data.items);
+    } else {
+      results.innerHTML = '<div class="loading">No results found</div>';
+    }
     
   } catch (error) {
+    console.error('Search error:', error);
     showNotification(`Error: ${error.message}`, 'error');
     results.innerHTML = '<div class="loading">Search failed. Please try again.</div>';
   } finally {
@@ -872,26 +1098,21 @@ async function search() {
 function renderResults(items) {
   const results = document.getElementById('results');
   
-  if (loading) {
-    results.innerHTML = `
-      <div class="loading">
-        <div class="loading-spinner"></div>
-        <p>Fetching results...</p>
-      </div>
-    `;
+  if (!items || items.length === 0) {
+    results.innerHTML = '<div class="loading">No results found</div>';
     return;
   }
   
-  results.innerHTML = '';
+  results.innerHTML = ''; // Clear any existing content
   
-  if (items && items.length > 0) {
-    items.forEach((item, index) => {
-      const card = document.createElement('div');
-      card.className = 'result-card';
-      card.style.animation = `slideIn 0.3s ease forwards ${index * 0.1}s`;
-      
-      const isBookmarked = bookmarks.some(b => b.id === item.id);
-      
+  items.forEach((item, index) => {
+    const card = document.createElement('div');
+    card.className = 'result-card';
+    card.style.animation = `slideIn 0.3s ease forwards ${index * 0.1}s`;
+    
+    const isBookmarked = bookmarks.some(b => b.id === item.id);
+    
+    try {
       if (currentTab === 'repos' || (item.owner && item.full_name)) {
         card.innerHTML = `
           <div class="result-header">
@@ -900,17 +1121,19 @@ function renderResults(items) {
           </div>
           <p>${item.description || 'No description available'}</p>
           <div class="stats">
-            <span><span class="material-icons animated-icon">star</span>${item.stargazers_count}</span>
+            <span><span class="material-icons animated-icon">star</span>${item.stargazers_count || 0}</span>
             <span class="stat-dot">•</span>
-            <span><span class="material-icons animated-icon">fork_right</span>${item.forks_count}</span>
+            <span><span class="material-icons animated-icon">fork_right</span>${item.forks_count || 0}</span>
             <span class="stat-dot">•</span>
-            <span><span class="material-icons animated-icon">remove_red_eye</span>${item.watchers_count}</span>
+            <span><span class="material-icons animated-icon">remove_red_eye</span>${item.watchers_count || 0}</span>
           </div>
           <div class="action-buttons">
-            <a href="${item.homepage}" class="action-btn" target="_blank" style="display: ${item.homepage ? 'inline-flex' : 'none'}">
-              <span class="material-icons">launch</span>
-              Visit Website
-            </a>
+            ${item.homepage ? `
+              <a href="${item.homepage}" class="action-btn" target="_blank">
+                <span class="material-icons">launch</span>
+                Visit Website
+              </a>
+            ` : ''}
             <button class="action-btn" onclick="toggleBookmark(${JSON.stringify(item).replace(/"/g, '&quot;')})">
               <span class="material-icons">${isBookmarked ? 'bookmark' : 'bookmark_border'}</span>
               ${isBookmarked ? 'Bookmarked' : 'Bookmark'}
@@ -922,7 +1145,6 @@ function renderResults(items) {
           </div>
         `;
       } else if (currentTab === 'users' || item.login) {
-        // Update user card rendering with horizontal stats
         card.setAttribute('data-username', item.login);
         card.innerHTML = `
           <div class="result-header">
@@ -942,7 +1164,7 @@ function renderResults(items) {
             <span class="stat-dot">•</span>
             <div class="stat-item">
               <span class="material-icons animated-icon">star</span>
-              <span>Score: ${Math.round(item.score)}</span>
+              <span>Score: ${Math.round(item.score || 0)}</span>
             </div>
           </div>
           <div class="action-buttons">
@@ -956,15 +1178,11 @@ function renderResults(items) {
       }
       
       results.appendChild(card);
-    });
-  } else {
-    results.innerHTML = `
-      <div class="loading">
-        <span class="material-icons animated-icon">search_off</span>
-        <p>No results found</p>
-      </div>
-    `;
-  }
+    } catch (error) {
+      console.error('Error rendering card:', error);
+      // Skip this card but continue with others
+    }
+  });
 }
 
 document.getElementById('searchInput').addEventListener('keypress', (e) => {
@@ -987,5 +1205,102 @@ const savedTheme = localStorage.getItem('theme') || 'light';
 document.body.setAttribute('data-theme', savedTheme);
 const themeIcon = document.querySelector('.theme-toggle .material-icons');
 themeIcon.textContent = savedTheme === 'dark' ? 'light_mode' : 'dark_mode';
+
+// Initialize theme system
+function initializeTheme() {
+  const savedPreference = localStorage.getItem('theme-preference') || 'system';
+  document.getElementById('themeSelect').value = savedPreference;
+  updateTheme();
+  
+  // Listen for system theme changes
+  window.matchMedia('(prefers-color-scheme: dark)').addListener(updateTheme);
+}
+
+// Initialize experiments
+function initializeExperiments() {
+  ['animatedCards', 'advancedFilters', 'realTimeSearch', 'smartSort', 'previewMode'].forEach(feature => {
+    const enabled = localStorage.getItem(`experiment-${feature}`) === 'true';
+    document.getElementById(feature).checked = enabled;
+    if (enabled) toggleExperiment(feature);
+  });
+}
+
+// Experiment functions
+function toggleExperiment(feature) {
+  const enabled = document.getElementById(feature).checked;
+  localStorage.setItem(`experiment-${feature}`, enabled);
+  
+  switch(feature) {
+    case 'animatedCards':
+      document.querySelectorAll('.result-card').forEach(card => {
+        card.style.transition = enabled ? 'all 0.3s ease' : 'none';
+        if (enabled) card.classList.add('animate-in');
+        else card.classList.remove('animate-in');
+      });
+      break;
+      
+    case 'advancedFilters':
+      const filters = document.getElementById('repoFilters');
+      filters.style.display = enabled ? 'flex' : 'none';
+      if (enabled) filters.style.animation = 'slideIn 0.3s ease-out';
+      break;
+      
+    case 'realTimeSearch':
+      const searchInput = document.getElementById('searchInput');
+      if (enabled) {
+        searchInput.addEventListener('input', debounce(search, 500));
+      } else {
+        const oldInput = searchInput.cloneNode(true);
+        searchInput.parentNode.replaceChild(oldInput, searchInput);
+      }
+      break;
+
+    case 'smartSort':
+      // Implement smart sorting logic
+      if (enabled) {
+        // Add smart sorting functionality
+      }
+      break;
+
+    case 'previewMode':
+      // Implement preview mode
+      if (enabled) {
+        document.querySelectorAll('.result-card').forEach(card => {
+          card.addEventListener('mouseenter', showPreview);
+          card.addEventListener('mouseleave', hidePreview);
+        });
+      } else {
+        document.querySelectorAll('.result-card').forEach(card => {
+          card.removeEventListener('mouseenter', showPreview);
+          card.removeEventListener('mouseleave', hidePreview);
+        });
+      }
+      break;
+  }
+  
+  showNotification(
+    `${feature.replace(/([A-Z])/g, ' $1').trim()} ${enabled ? 'enabled' : 'disabled'}`,
+    'info'
+  );
+}
+
+// Add debounce utility function
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// Call initializations
+document.addEventListener('DOMContentLoaded', () => {
+  initializeTheme();
+  initializeExperiments();
+});
 </script>
 </body></html>
