@@ -1,8 +1,8 @@
-GitBoard - A Comprehensive GitHub Repository and User Search Tool
+GitSight - A Comprehensive GitHub Repository and User Search Tool
 
-Welcome to GitBoard — a powerful and intuitive web-based application designed to simplify the way you search and explore GitHub repositories, users, gists, and much more! Whether you're a developer looking for open-source projects, a researcher exploring contributions, or just a GitHub enthusiast, GitBoard is here to streamline your experience.
+Welcome to GitBoard — a powerful and intuitive web-based application designed to simplify the way you search and explore GitHub repositories, users, gists, and much more! Whether you're a developer looking for open-source projects, a researcher exploring contributions, or just a GitHub enthusiast, GitSight is here to streamline your experience.
 
-Live Demo: GitBoard
+Live Demo: GitSight
 
 
 ---
@@ -46,7 +46,7 @@ Exploring Gists
 
 Overview
 
-GitBoard is built with the aim of making GitHub exploration fast, easy, and enjoyable. With GitBoard, you can:
+GitSight is built with the aim of making GitHub exploration fast, easy, and enjoyable. With GitSight, you can:
 
 Search for GitHub repositories by keywords, language, stars, and more.
 
@@ -136,14 +136,14 @@ Exploring Gists
 
 Configuration
 
-GitBoard requires access to the GitHub API to fetch data. Fortunately for you, you don't have to profide an API, because GitHub's api is aviable at api.github.com
+GitSight requires access to the GitHub API to fetch data. Fortunately for you, you don't have to profide an API, because GitHub's api is aviable at api.github.com
 ---
 
 Contributing
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated.
 
-To contribute to GitBoard:
+To contribute to GitSight:
 
 1. Fork the repository.
 
@@ -191,4 +191,4 @@ Distributed under the MIT License. See LICENSE for more information.
 
 ---
 
-We hope you enjoy using GitBoard! If you have any questions or feedback, feel free to reach out. Happy coding!
+We hope you enjoy using GitSight! If you have any questions or feedback, feel free to reach out. Happy coding!
