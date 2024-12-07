@@ -10,11 +10,8 @@
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <style>
 :root {
-  /* Light theme */
-  --primary-light: #0d47a1; /* Darker blue for better contrast */
-  
-  /* Dark theme - making accent colors darker */
-  --primary-dark: #2962ff; /* Darker bright blue for better contrast */
+  --primary-light: #0d47a1; 
+  --primary-dark: #2962ff; 
   --surface-dark: #121212;
   --background-dark: #000000;
   --text-primary-dark: rgba(255, 255, 255, 0.98);
@@ -140,7 +137,7 @@ nav {
 
 .tab {
   padding: 0.75rem 1.5rem;
-  border-radius: 12px;
+  border-radius: 16px;
   cursor: pointer;
   transition: all 0.2s;
   color: var(--text-secondary);
@@ -155,6 +152,7 @@ nav {
     rgba(var(--primary-rgb), 0.2) 0%,
     rgba(var(--primary-rgb), 0.1) 100%
   );
+  transform: translateY(-2px);
 }
 
 .tab.active {
@@ -165,15 +163,16 @@ nav {
 .search-container {
   position: relative;
   display: flex;
-  gap: 1rem;
+  gap: 0.5rem;
   margin-bottom: 2rem;
+  animation: fadeIn 0.5s ease-out;
 }
 
 input {
   flex: 1;
   padding: 1rem;
   border: none;
-  border-radius: 12px;
+  border-radius: 16px;
   background: var(--surface);
   font-size: 1rem;
   color: var(--text-primary);
@@ -191,19 +190,83 @@ button {
   background: var(--primary);
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 16px;
   cursor: pointer;
   font-size: 1rem;
   font-weight: 500;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.2s;
 }
 
 button:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 8px var(--shadow);
+  background: var(--primary-dark);
+  color: white;
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.share-btn,
+.bookmark-btn {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.share-btn:hover,
+.bookmark-btn:hover {
+  transform: scale(1.1);
+  background: none;
+  box-shadow: none;
+}
+
+.expand-btn {
+  width: 100%;
+  text-align: center;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  background: none;
+  border: none;
+  color: var(--primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.expand-btn:hover {
+  background: rgba(var(--primary-rgb), 0.1);
+  transform: none;
+  box-shadow: none;
+}
+
+.creator-badge {
+  background: linear-gradient(135deg, #ff4081 0%, #ff6b6b 100%);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .results {
@@ -215,6 +278,8 @@ button:hover {
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.3s ease, transform 0.3s ease;
+  animation: slideIn 0.3s ease-out forwards;
+  border-radius: 16px;
   background: linear-gradient(
     135deg,
     rgba(255, 255, 255, 0.1) 0%,
@@ -250,6 +315,11 @@ button:hover {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.result-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
 .stats {
   display: flex;
   gap: 1rem;
@@ -274,13 +344,18 @@ button:hover {
   border: 3px solid var(--primary);
   border-radius: 50%;
   border-top-color: transparent;
-  animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite, pulse 2s ease-in-out infinite;
   margin: 2rem auto;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
 }
 
 .filters {
@@ -292,7 +367,7 @@ button:hover {
 select {
   padding: 0.75rem;
   border: none;
-  border-radius: 12px;
+  border-radius: 16px;
   background: var(--surface);
   color: var(--text-primary);
   box-shadow: 0 2px 4px var(--shadow);
@@ -301,7 +376,7 @@ select {
 .user-details {
   margin-top: 1rem;
   padding: 1rem;
-  border-radius: 12px;
+  border-radius: 16px;
   background: var(--surface);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   display: none;
@@ -315,11 +390,16 @@ select {
   width: 100%;
   text-align: center;
   padding: 0.5rem;
-  margin-top: 1rem;
+  margin: 0.5rem 0;
   background: none;
   border: none;
   color: var(--primary);
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
 }
 
 .stat-item {
@@ -360,7 +440,7 @@ select {
   );
   backdrop-filter: blur(12px);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 1rem;
   margin-bottom: 1rem;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -439,9 +519,11 @@ input:checked + .slider:before {
 
 .settings-menu {
   width: 90vw;
-  max-width: 450px; /* Increased width */
+  max-width: 450px; 
   overflow-y: auto;
   max-height: 100vh;
+  right: -450px; 
+  width: min(450px, 90vw); 
 }
 
 .experiments-warning {
@@ -482,7 +564,7 @@ a {
 }
 
 a:hover {
-  color: #1565c0; /* Darker shade for hover */
+  color: #1565c0; 
   text-decoration: underline;
 }
 
@@ -493,24 +575,25 @@ a:hover {
   padding: 0.5rem 1rem;
   background: var(--primary);
   color: white;
-  border-radius: 8px;
+  border-radius: 16px;
   transition: all 0.3s ease;
   text-decoration: none;
-  font-weight: 500;
 }
 
 .action-link:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(13, 71, 161, 0.3);
   text-decoration: none;
-  background: #1565c0;
+  background: var(--primary-dark);
+  color: white !important;
 }
 
-.action-buttons {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  flex-wrap: wrap;
+[data-theme="dark"] .action-link {
+  color: white !important;
+}
+
+[data-theme="dark"] .action-link:hover {
+  color: white !important;
 }
 
 .footer-description {
@@ -560,7 +643,7 @@ footer {
   background: var(--primary);
   color: white;
   padding: 0.5rem 1rem;
-  border-radius: 8px;
+  border-radius: 16px;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -585,7 +668,8 @@ footer {
 }
 
 .animated-icon {
-  animation: pulse 2s infinite;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .material-icons.spin {
@@ -595,9 +679,8 @@ footer {
 .settings-menu {
   position: fixed;
   top: 0;
-  right: -400px;
-  width: 90vw; /* Change from fixed 400px */
-  max-width: 450px;
+  right: -450px; 
+  width: min(450px, 90vw); 
   height: 100vh;
   background: var(--surface);
   box-shadow: -2px 0 10px var(--shadow);
@@ -677,6 +760,31 @@ footer {
   background-color: blue;
 }
 
+/* Share popup styles */
+.share-popup {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px var(--shadow);
+  backdrop-filter: blur(10px);
+  padding: 1rem;
+  border-radius: 12px;
+  max-width: 90vw;
+  width: 400px;
+}
+
+.share-link {
+  background: var(--background);
+  padding: 0.75rem;
+  border-radius: 8px;
+  word-break: break-all;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+
 /* Add these CSS changes to fix mobile UI */
 @media (max-width: 768px) {
   .container {
@@ -726,6 +834,25 @@ footer {
   .stat-dot {
     display: none;
   }
+
+  .search-container {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .search-container button {
+    padding: 0.75rem;
+    min-width: 44px; 
+  }
+
+  .search-container button .material-icons {
+    margin: 0;
+  }
+
+  .search-container button span:not(.material-icons) {
+    display: none; 
+  }
 }
 
 .avatar {
@@ -750,13 +877,14 @@ footer {
 
 .result-header {
   display: flex;
-  align-items: center;
   gap: 1rem;
-  margin-bottom: 1rem;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
 }
 
-.result-header > div {
+.result-header > div:first-child {
   flex: 1;
+  min-width: 0; 
 }
 
 .coming-soon-badge {
@@ -771,6 +899,112 @@ footer {
   align-items: center;
   gap: 4px;
 }
+
+.beta-badge {
+  background: linear-gradient(135deg, #ff4081 0%, #ff6b6b 100%);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-left: 8px;
+  animation: pulse 2s infinite;
+}
+
+.beta-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  z-index: 3000;
+  max-width: 90vw;
+  width: 500px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .beta-popup {
+  background: rgba(30, 30, 30, 0.9);
+}
+
+.beta-popup h2 {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.beta-popup p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.beta-popup .action-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+/* Update share button styles */
+.share-btn {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.share-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Add these new animations */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.result-card p {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 1rem;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.action-link {
+  flex: 0 1 auto;
+  white-space: nowrap;
+  margin: 0;
+}
+
 </style>
 </head>
 <body>
@@ -833,6 +1067,17 @@ footer {
       <option value="python">Python</option>
       <option value="java">Java</option>
       <option value="cpp">C++</option>
+      <option value="typescript">TypeScript</option>
+      <option value="html">HTML</option>
+      <option value="css">CSS</option>
+      <option value="php">PHP</option>
+      <option value="ruby">Ruby</option>
+      <option value="swift">Swift</option>
+      <option value="kotlin">Kotlin</option>
+      <option value="go">Go</option>
+      <option value="rust">Rust</option>
+      <option value="c">C</option>
+      <option value="csharp">C#</option>
     </select>
     
     <select id="stars">
@@ -988,6 +1233,89 @@ let currentTab = 'repos';
 let loading = false;
 let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
 
+function renderResults(items) {
+  const results = document.getElementById('results');
+  results.innerHTML = '';
+  
+  items.forEach(item => {
+    const isBookmarked = bookmarks.some(b => b.id === item.id);
+    const card = document.createElement('div');
+    card.className = 'result-card animate-in';
+    
+    if (item.type === 'User' || item.login) {
+      card.setAttribute('data-username', item.login);
+      const isCreator = ['Mikey', '155601-Mikey', 'DevMikey123'].includes(item.login);
+      card.innerHTML = `
+        <div class="result-header">
+          <img src="${item.avatar_url}" alt="${item.login}" class="avatar">
+          <div>
+            <h3>
+              <a href="${item.html_url}" target="_blank" rel="noopener">${item.login}</a>
+              ${isCreator ? '<span class="creator-badge"><span class="material-icons">verified</span>GitSights Creator</span>' : ''}
+            </h3>
+            <p>${item.bio || ''}</p>
+          </div>
+          <div class="card-actions">
+            <button class="share-btn" onclick="shareItem(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+              <span class="material-icons">share</span>
+            </button>
+            <button class="bookmark-btn" onclick="toggleBookmark(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+              <span class="material-icons">${isBookmarked ? 'bookmark' : 'bookmark_border'}</span>
+            </button>
+          </div>
+        </div>
+        <button class="expand-btn" onclick="expandUserDetails('${item.login}')">
+          <span class="material-icons">expand_more</span>
+          Toggle Details
+        </button>
+        <div class="user-details"></div>
+      `;
+    } else if (item.full_name) {
+      const isOfficial = item.html_url === 'https://github.com/155601-Mikey/GitHub-Insights';
+      card.innerHTML = `
+        <div class="result-header">
+          <div>
+            <h3>
+              <a href="${item.html_url}" target="_blank" rel="noopener">${item.full_name}</a>
+              ${isOfficial ? '<span class="creator-badge"><span class="material-icons">verified</span>Official Source Code</span>' : ''}
+            </h3>
+            <p>${item.description || 'No description available'}</p>
+            <div class="stats">
+              <span><span class="material-icons">star</span>${item.stargazers_count}</span>
+              <span class="stat-dot">•</span>
+              <span><span class="material-icons">fork_right</span>${item.forks_count}</span>
+              ${item.language ? `
+                <span class="stat-dot">•</span>
+                <span><span class="material-icons">code</span>${item.language}</span>
+              ` : ''}
+            </div>
+            <div class="action-buttons">
+              <a href="${item.html_url}" target="_blank" rel="noopener" class="action-link">
+                <span class="material-icons">code</span>View Source
+              </a>
+              ${item.homepage ? `
+                <a href="${item.homepage}" target="_blank" rel="noopener" class="action-link">
+                  <span class="material-icons">link</span>Visit Website
+                </a>
+              ` : ''}
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="share-btn" onclick="shareItem(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+              <span class="material-icons">share</span>
+            </button>
+            <button class="bookmark-btn" onclick="toggleBookmark(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+              <span class="material-icons">${isBookmarked ? 'bookmark' : 'bookmark_border'}</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+    
+    results.appendChild(card);
+  });
+}
+
 function showNotification(message, type = 'info') {
   const notification = document.createElement('div');
   notification.className = `notification ${type}`;
@@ -997,18 +1325,55 @@ function showNotification(message, type = 'info') {
   `;
   document.getElementById('notificationContainer').appendChild(notification);
   
-  // Show the notification
   setTimeout(() => {
     notification.style.opacity = '1';
   }, 10);
   
-  // Automatically dismiss after 3 seconds
   setTimeout(() => {
     notification.style.opacity = '0';
     setTimeout(() => {
       notification.remove();
-    }, 500); // Wait for fade out to finish before removing
+    }, 500); 
   }, 3000);
+}
+
+async function shareItem(item) {
+  const url = item.html_url;
+  const title = item.full_name || item.login || 'Check this out on GitHub';
+  
+  const notification = document.createElement('div');
+  notification.className = 'notification share-popup';
+  notification.innerHTML = `
+    <div class="share-link">${url}</div>
+    <div class="share-actions">
+      <button onclick="copyLink('${url}')" class="share-action-btn">
+        <span class="material-icons">content_copy</span>
+        Copy Link
+      </button>
+      <button onclick="closeSharePopup(this)" class="share-action-btn">
+        <span class="material-icons">close</span>
+        Close
+      </button>
+    </div>
+  `;
+  
+  document.getElementById('notificationContainer').appendChild(notification);
+  setTimeout(() => notification.style.opacity = '1', 10);
+}
+
+function copyLink(url) {
+  navigator.clipboard.writeText(url)
+    .then(() => {
+      showNotification('Link copied to clipboard!', 'success');
+      closeSharePopup(document.querySelector('.share-popup'));
+    })
+    .catch(() => showNotification('Failed to copy link', 'error'));
+}
+
+function closeSharePopup(element) {
+  const popup = element.closest('.share-popup');
+  popup.style.opacity = '0';
+  setTimeout(() => popup.remove(), 300);
 }
 
 function toggleTheme() {
@@ -1021,13 +1386,22 @@ function toggleTheme() {
   const themeIcon = document.querySelector('.theme-toggle .material-icons');
   themeIcon.textContent = newTheme === 'dark' ? 'light_mode' : 'dark_mode';
   
-  // Force reflow to ensure styles are applied
   document.body.offsetHeight;
 }
 
 function toggleSettings() {
-  document.querySelector('.settings-menu').classList.toggle('open');
-  document.querySelector('.settings-overlay').classList.toggle('open');
+  const menu = document.querySelector('.settings-menu');
+  const overlay = document.querySelector('.settings-overlay');
+  
+  if (menu.classList.contains('open')) {
+    menu.style.right = '-450px';
+    menu.classList.remove('open');
+    overlay.classList.remove('open');
+  } else {
+    menu.style.right = '0';
+    menu.classList.add('open');
+    overlay.classList.add('open');
+  }
 }
 
 function updateTheme() {
@@ -1051,10 +1425,14 @@ function switchTab(tab) {
   const tabElement = document.querySelector(`.tab:nth-child(${
     tab === 'repos' ? 1 : 
     tab === 'users' ? 2 : 
-    tab === 'gists' ? 3 : 4
+    tab === 'gists' ? 3 : 
+    tab === 'bookmarks' ? 4 : 
+    1 
   })`);
   
-  tabElement.classList.add('active');
+  if (tabElement) {
+    tabElement.classList.add('active');
+  }
   
   document.getElementById('repoFilters').style.display = tab === 'repos' ? 'flex' : 'none';
   
@@ -1067,16 +1445,29 @@ function switchTab(tab) {
     resultsDiv.style.opacity = '1';
     
     const input = document.getElementById('searchInput');
-    input.placeholder = `Search GitHub ${
-      tab === 'repos' ? 'repositories' : 
-      tab === 'users' ? 'users' : 
-      tab === 'gists' ? 'gists' : 'bookmarks'
-    }...`;
+    input.placeholder = getPlaceholderText(tab);
     
     if (tab === 'bookmarks') {
       showBookmarks();
+    } else if (input.value) {
+      search(); 
     }
   }, 300);
+}
+
+function getPlaceholderText(tab) {
+  switch(tab) {
+    case 'bookmarks':
+      return 'Search bookmarked items...';
+    case 'repos':
+      return 'Search repositories...';
+    case 'users':
+      return 'Search users...';
+    case 'gists':
+      return 'Search gists...';
+    default:
+      return 'Search GitHub...';
+  }
 }
 
 function clearSearch() {
@@ -1125,7 +1516,6 @@ function showBookmarks() {
   
   renderResults(filteredBookmarks);
   
-  // Apply highlighting if enabled
   if (document.getElementById('keywordHighlight')?.checked) {
     highlightKeywords(searchQuery);
   }
@@ -1218,12 +1608,17 @@ async function search() {
     return;
   }
   
+  if (currentTab === 'bookmarks') {
+    showBookmarks();
+    return;
+  }
+  
   loading = true;
   const results = document.getElementById('results');
   results.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>Searching...</p></div>';
   
   try {
-    let endpoint = '';
+    let endpoint;
     const language = document.getElementById('language').value;
     const stars = document.getElementById('stars').value;
     const sort = document.getElementById('sort').value;
@@ -1235,49 +1630,67 @@ async function search() {
     switch(currentTab) {
       case 'repos':
         endpoint = `https://api.github.com/search/repositories?q=${encodeURIComponent(queryParams)}`;
-        if (sort !== 'best-match') {
-          endpoint += `&sort=${sort}&order=desc`;
-        }
         break;
       case 'users':
         endpoint = `https://api.github.com/search/users?q=${encodeURIComponent(query)}`;
         break;
       case 'gists':
-        endpoint = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}+fork:true+filename:${encodeURIComponent(query)}`; // Use repositories endpoint with gist filter
+        endpoint = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}+fork:true+filename:gist`;
         break;
     }
 
-    console.log('Fetching:', endpoint); // Debug log
-    
     const response = await fetch(endpoint);
     if (!response.ok) {
-      throw new Error(`GitHub API error: ${response.statusText}`);
+      throw new Error(`GitHub API error: ${response.statusText || 'Failed to fetch'}`);
     }
     
     const data = await response.json();
+    const items = data.items || [];
     
-    console.log('Response:', data); // Debug log
-    
-    if (data.items && data.items.length > 0) {
-      results.innerHTML = '';
-      renderResults(data.items);
+    if (items.length > 0) {
+      renderResults(items);
     } else {
       results.innerHTML = '<div class="loading">No results found</div>';
     }
     
   } catch (error) {
     console.error('Search error:', error);
-    const errorMessage = error.response?.status === 403 ? 
-      'API rate limit exceeded. Please try again later.' :
-      'Search failed. Please try again.';
-    showNotification(errorMessage, 'error');
-    results.innerHTML = `<div class="loading">${errorMessage}</div>`;
+    showNotification(error.message || 'Search failed. Please try again.', 'error');
+    results.innerHTML = `<div class="loading">Error: ${error.message || 'Search failed'}</div>`;
   } finally {
     loading = false;
   }
 }
 
-// Add touch event handling for mobile
+function showBetaPopup() {
+  const popup = document.createElement('div');
+  popup.className = 'beta-popup';
+  popup.innerHTML = `
+    <h2>
+      <span class="material-icons">science</span>
+      Experimental Feature
+    </h2>
+    <p>The "All Search" feature lets you search across repositories, users, and gists simultaneously. This feature is currently in beta testing and may:</p>
+    <ul>
+      <li>Take longer to load results</li>
+      <li>Sometimes return unexpected results</li>
+      <li>Hit API rate limits more quickly</li>
+    </ul>
+    <p>Your feedback helps us improve! Please report any issues you find.</p>
+    <div class="action-buttons">
+      <a href="https://github.com/155601-Mikey/GBW-GitBoard-Web-/issues" target="_blank" class="action-link">
+        <span class="material-icons">bug_report</span>
+        Report Issues
+      </a>
+      <button onclick="dismissBetaPopup()" class="action-link">
+        <span class="material-icons">check</span>
+        Got it
+      </button>
+    </div>
+  `;
+  document.body.appendChild(popup);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const settingsMenu = document.querySelector('.settings-menu');
   let touchStartX = 0;
@@ -1295,7 +1708,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   
-  // Prevent zoom on double tap for mobile
   let lastTap = 0;
   document.addEventListener('touchend', (e) => {
     const now = Date.now();
@@ -1307,301 +1719,67 @@ document.addEventListener('DOMContentLoaded', () => {
     
     lastTap = now;
   }, false);
-});
 
-// Add performance optimizations
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('animate-in');
-      observer.unobserve(entry.target); // Stop observing once animated
+  document.getElementById('searchInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      search();
     }
   });
-}, {
-  threshold: 0.1,
-  rootMargin: '50px'
-});
 
-// Optimize rendering
-function renderResults(items) {
-  const results = document.getElementById('results');
-  
-  if (!items || items.length === 0) {
-    results.innerHTML = '<div class="loading">No results found</div>';
-    return;
-  }
-
-  const fragment = document.createDocumentFragment();
-  
-  items.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'result-card animate-in';
-    
-    if (currentTab === 'repos' || (currentTab === 'bookmarks' && item.full_name)) {
-      // Repository card
-      card.innerHTML = `
-        <div class="result-header">
-          <h3>
-            <a href="${item.html_url}" target="_blank" rel="noopener">${item.full_name}</a>
-          </h3>
-          <button class="bookmark-btn" onclick="toggleBookmark(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-            <span class="material-icons">${bookmarks.some(b => b.id === item.id) ? 'bookmark' : 'bookmark_border'}</span>
-          </button>
-        </div>
-        <p>${item.description || 'No description available'}</p>
-        <div class="stats">
-          <span><span class="material-icons">star</span>${item.stargazers_count || 0}</span>
-          <span class="stat-dot">•</span>
-          <span><span class="material-icons">fork_right</span>${item.forks_count || 0}</span>
-          <span class="stat-dot">•</span>
-          <span><span class="material-icons">remove_red_eye</span>${item.watchers_count || 0}</span>
-          ${item.language ? `
-            <span class="stat-dot">•</span>
-            <span><span class="material-icons">code</span>${item.language}</span>
-          ` : ''}
-        </div>
-        <div class="action-buttons" style="margin-top: 1rem;">
-          <a href="${item.html_url}" target="_blank" rel="noopener" class="action-link">
-            <span class="material-icons">code</span>View Source
-          </a>
-          ${item.homepage ? `
-            <a href="${item.homepage}" target="_blank" rel="noopener" class="action-link">
-              <span class="material-icons">link</span>Visit Website
-            </a>
-          ` : ''}
-        </div>
-      `;
-    } else if (currentTab === 'users' || (currentTab === 'bookmarks' && item.login)) {
-      // Check if user is a creator
-      const isCreator = ['155601-Mikey', 'DevMikey123'].includes(item.login);
-      
-      card.setAttribute('data-username', item.login);
-      card.innerHTML = `
-        <div class="result-header">
-          <img src="${item.avatar_url}" alt="${item.login}" class="avatar">
-          <div>
-            <h3>
-              <a href="${item.html_url}" target="_blank" rel="noopener">
-                ${item.login}
-              </a>
-              ${isCreator ? `
-                <span class="creator-badge">
-                  <span class="material-icons">verified</span>
-                  GitSights Creator
-                </span>
-              ` : ''}
-            </h3>
-            <button onclick="expandUserDetails('${item.login}')" class="action-link">
-              <span class="material-icons">expand_more</span>
-              View Profile
-            </button>
-          </div>
-          <button class="bookmark-btn" onclick="toggleBookmark(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-            <span class="material-icons">${bookmarks.some(b => b.id === item.id) ? 'bookmark' : 'bookmark_border'}</span>
-          </button>
-        </div>
-        <div class="user-details"></div>
-      `;
-    } else if (currentTab === 'gists') {
-      // Gist card
-      card.innerHTML = `
-        <div class="result-header">
-          <h3>
-            <a href="${item.html_url}" target="_blank" rel="noopener">${item.description || 'Untitled Gist'}</a>
-          </h3>
-          <button class="bookmark-btn" onclick="toggleBookmark(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-            <span class="material-icons">${bookmarks.some(b => b.id === item.id) ? 'bookmark' : 'bookmark_border'}</span>
-          </button>
-        </div>
-        <div class="stats">
-          <span><span class="material-icons">code</span>${item.language || 'Plain text'}</span>
-          ${item.updated_at ? `
-            <span class="stat-dot">•</span>
-            <span><span class="material-icons">history</span>${new Date(item.updated_at).toLocaleDateString()}</span>
-          ` : ''}
-        </div>
-        <div class="action-buttons">
-          <a href="${item.html_url}" target="_blank" rel="noopener" class="action-link">
-            <span class="material-icons">code</span>View Gist
-          </a>
-        </div>
-      `;
-    }
-    
-    observer.observe(card);
-    fragment.appendChild(card);
-  });
-  
-  results.innerHTML = '';
-  results.appendChild(fragment);
-}
-
-// Add requestAnimationFrame for smooth animations
-function animateElements() {
-  requestAnimationFrame(() => {
-    document.querySelectorAll('.animate-in').forEach(el => {
-      el.style.opacity = '1';
-      el.style.transform = 'translateY(0)';
-    });
-  });
-}
-
-// Remove from the experiments list
-function initializeExperiments() {
-  // Define available experiments
-  const experiments = [
-    'animatedCards',
-    'keywordHighlight', 
-    'realTimeSearch',
-    'advancedStats',
-    'performanceMode'
-  ];
-
-  // Only try to initialize experiments that have corresponding DOM elements
-  experiments.forEach(feature => {
-    const element = document.getElementById(feature);
+  const experimentSettings = JSON.parse(localStorage.getItem('experimentSettings') || '{}');
+  Object.keys(experimentSettings).forEach(id => {
+    const element = document.getElementById(id);
     if (element) {
-      const enabled = localStorage.getItem(`experiment-${feature}`) === 'true';
-      element.checked = enabled;
-      if (enabled) toggleExperiment(feature);
+      element.checked = experimentSettings[id];
+      if (id === 'performanceMode' && experimentSettings[id]) {
+        document.body.classList.add('performance-mode');
+      }
     }
   });
-}
+});
 
 // Initialize
 document.getElementById('repoFilters').style.display = 'flex';
-// Set initial theme
 const savedTheme = localStorage.getItem('theme') || 'light';
 document.body.setAttribute('data-theme', savedTheme);
 const themeIcon = document.querySelector('.theme-toggle .material-icons');
 themeIcon.textContent = savedTheme === 'dark' ? 'light_mode' : 'dark_mode';
 
-// Initialize theme system
+document.addEventListener('DOMContentLoaded', () => {
+  initializeTheme();
+  
+  document.querySelectorAll('.experiment input[type="checkbox"]').forEach(toggle => {
+    toggle.addEventListener('change', (e) => {
+      toggleExperiment(e.target.id);
+    });
+  });
+});
+
 function initializeTheme() {
   const savedPreference = localStorage.getItem('theme-preference') || 'system';
   document.getElementById('themeSelect').value = savedPreference;
   updateTheme();
   
-  // Listen for system theme changes
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateTheme);
 }
 
-// Call initializations
-document.addEventListener('DOMContentLoaded', () => {
-  initializeTheme();
-  
-  // Small delay to ensure DOM is fully loaded
-  setTimeout(() => {
-    initializeExperiments();
-  }, 100);
-});
-
-// Add this function to fix the "toggleExperiment is not defined" error
-function toggleExperiment(feature) {
-  const enabled = document.getElementById(feature).checked;
-  localStorage.setItem(`experiment-${feature}`, enabled);
-  
-  switch(feature) {
-    case 'animatedCards':
-      document.body.classList.toggle('animated-cards', enabled);
-      break;
-      
-    case 'keywordHighlight':
-      // Apply keyword highlighting to existing results
-      if (enabled) {
-        const searchQuery = document.getElementById('searchInput').value.trim();
-        if (searchQuery) {
-          highlightKeywords(searchQuery);
-        }
-      } else {
-        // Remove highlights
-        document.querySelectorAll('.highlight').forEach(el => {
-          el.outerHTML = el.textContent;
-        });
-      }
-      break;
-      
-    case 'realTimeSearch':
-      if (enabled) {
-        document.getElementById('searchInput').addEventListener('input', debounce(search, 500));
-      } else {
-        document.getElementById('searchInput').removeEventListener('input', debounce(search, 500));
-      }
-      break;
-      
-    case 'advancedStats':
-      // Toggle advanced statistics visibility
-      document.querySelectorAll('.advanced-stat').forEach(el => {
-        el.style.display = enabled ? 'flex' : 'none';
-      });
-      break;
-      
-    case 'performanceMode':
-      document.body.classList.toggle('performance-mode', enabled);
-      break;
+function dismissBetaPopup() {
+  const popup = document.querySelector('.beta-popup');
+  if (popup) {
+    popup.style.opacity = '0';
+    setTimeout(() => popup.remove(), 300);
+    localStorage.setItem('beta-popup-dismissed', 'true');
   }
 }
 
-// Helper function for debouncing real-time search
-function debounce(func, wait) {
-  let timeout;
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout);
-      func(...args);
-    };
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-  };
-}
-
-// Helper function for keyword highlighting
-function highlightKeywords(query) {
-  if (!query) return;
+function toggleExperiment(experimentId) {
+  const settings = JSON.parse(localStorage.getItem('experimentSettings') || '{}');
+  settings[experimentId] = document.getElementById(experimentId).checked;
+  localStorage.setItem('experimentSettings', JSON.stringify(settings));
   
-  const words = query.toLowerCase().split(' ').filter(word => word.length > 2);
-  const results = document.querySelectorAll('.result-card');
-  
-  results.forEach(card => {
-    const textNodes = getAllTextNodes(card);
-    textNodes.forEach(node => {
-      let text = node.textContent;
-      if (node.parentNode.tagName === 'A' || node.parentNode.tagName === 'BUTTON') return;
-      
-      words.forEach(word => {
-        const regex = new RegExp(`(${word})`, 'gi');
-        text = text.replace(regex, '<span class="highlight">$1</span>');
-      });
-      
-      if (text !== node.textContent) {
-        const span = document.createElement('span');
-        span.innerHTML = text;
-        node.parentNode.replaceChild(span, node);
-      }
-    });
-  });
-}
-
-// Helper function to get all text nodes
-function getAllTextNodes(element) {
-  const nodes = [];
-  const walk = document.createTreeWalker(
-    element,
-    NodeFilter.SHOW_TEXT,
-    null,
-    false
-  );
-  
-  let node;
-  while (node = walk.nextNode()) {
-    if (node.parentNode.tagName !== 'SCRIPT' && 
-        node.parentNode.tagName !== 'STYLE' &&
-        node.textContent.trim()) {
-      nodes.push(node);
-    }
+  if (experimentId === 'performanceMode') {
+    document.body.classList.toggle('performance-mode', settings[experimentId]);
   }
-  
-  return nodes;
 }
 </script>
 </body></html>
