@@ -163,20 +163,21 @@ To contribute to GitSight:
 
 Please make sure to update tests as appropriate.
 
+Donating is also an option to support the development of the project!
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/X8X0O38PQ)
+
 
 ---
 
 Future Enhancements
 
-Advanced Filters: Add more filtering options for repositories and users (e.g., by commit history, tags).
-
-Saved Searches: Allow users to save search queries for quick access.
-
-Dark Mode: A theme toggle option for better user experience.
-
-User Stats: Add detailed user contribution stats and heatmaps.
-
-Issue Search: Search for issues across repositories by label, language, or priority.
+| Feature           | Description                                                       | Availability        |
+|-------------------|-------------------------------------------------------------------|---------------------|
+| Advanced Filters  | Add more filtering options for repositories and users (e.g., by commit history, tags). | Currently Available |
+| Saved Searches    | Allow users to save search queries for quick access.             | Not Available  |
+| Dark Mode         | A theme toggle option for better user experience.                | Currently Available |
+| User Stats        | Add detailed user contribution stats and heatmaps.               | Work-In-Progress/partially Available |
+| Issue Search      | Search for issues across repositories by label, language, or priority. | Not Available |
 
 
 If you have suggestions for future features, feel free to open an issue or submit a pull request!
