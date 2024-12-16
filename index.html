@@ -211,7 +211,7 @@ button:hover {
   display: flex;
   gap: 0.5rem;
   margin-left: auto;
-  flex-shrink: 0;
+  align-items: center;
 }
 
 .share-btn,
@@ -224,7 +224,7 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s;
+  transition: all 0.3s ease;
 }
 
 .share-btn:hover,
@@ -234,39 +234,33 @@ button:hover {
   box-shadow: none;
 }
 
-.expand-btn {
-  width: 100%;
-  text-align: center;
-  padding: 0.5rem;
-  margin: 0.5rem 0;
-  background: none;
-  border: none;
-  color: var(--primary);
-  cursor: pointer;
+/* Add animations for interactive icons */
+.theme-toggle .material-icons,
+.bookmark-btn .material-icons,
+.clear-search .material-icons {
+  transition: transform 0.3s ease;
+}
+
+.theme-toggle:hover .material-icons {
+  transform: rotate(180deg);
+}
+
+.bookmark-btn:hover .material-icons {
+  transform: scale(1.2);
+}
+
+.clear-search:hover .material-icons {
+  transform: rotate(90deg);
+}
+
+.tabs {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
-}
-
-.expand-btn:hover {
-  background: rgba(var(--primary-rgb), 0.1);
-  transform: none;
-  box-shadow: none;
-}
-
-.creator-badge {
-  background: linear-gradient(135deg, #ff4081 0%, #ff6b6b 100%);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 500;
-  margin-left: 8px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  gap: 2rem;
+  margin: 2rem 0;
+  background: var(--surface);
+  padding: 0.5rem;
+  border-radius: 16px;
+  box-shadow: 0 2px 4px var(--shadow);
 }
 
 .results {
@@ -288,11 +282,19 @@ button:hover {
   );
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  contain: content;
+  will-change: transform;
 }
 
-.result-card.animate-in {
-  opacity: 1;
-  transform: translateY(0);
+.performance-mode * {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+}
+
+.performance-mode .result-card {
+  contain: strict;
 }
 
 [data-theme="light"] .result-card {
@@ -762,27 +764,108 @@ footer {
 
 /* Share popup styles */
 .share-popup {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   background: var(--surface);
   border: 1px solid var(--border);
-  box-shadow: 0 4px 12px var(--shadow);
-  backdrop-filter: blur(10px);
-  padding: 1rem;
   border-radius: 12px;
-  max-width: 90vw;
-  width: 400px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px var(--shadow);
+  z-index: 2000;
+  width: min(400px, 90vw);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .share-link {
-  background: var(--background);
-  padding: 0.75rem;
-  border-radius: 8px;
-  word-break: break-all;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.share-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.share-action-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+.share-action-btn:hover {
+  background: none;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Version popup styles */
+.version-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--surface);
   border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px var(--shadow);
+  z-index: 3000;
+  width: min(600px, 90vw);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.version-popup h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.version-popup-content {
+  margin: 1rem 0;
+}
+
+.version-popup-section {
+  margin: 1rem 0;
+}
+
+.version-popup-section h3 {
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.version-popup-section ul {
+  list-style: none;
+  padding-left: 1rem;
+}
+
+.version-popup-section li {
+  margin: 0.5rem 0;
+  display: flex;
+  align-items: start;
+  gap: 0.5rem;
+}
+
+.version-popup-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  justify-content: flex-end;
+}
+
+.version-popup-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 /* Add these CSS changes to fix mobile UI */
@@ -1005,6 +1088,19 @@ footer {
   margin: 0;
 }
 
+[data-performance="true"] * {
+  animation: none !important;
+  transition: none !important;
+}
+
+[data-performance="true"] .result-card {
+  animation: none !important;
+}
+
+[data-performance="true"] .material-icons {
+  transition: none !important;
+}
+
 </style>
 </head>
 <body>
@@ -1015,7 +1111,7 @@ footer {
       GitSights
     </div>
     <div class="nav-actions">
-      <a href="https://github.com/155601-Mikey/GBW-GitBoard-Web-/issues" class="nav-link" target="_blank">
+      <a href="https://github.com/DaDevMikey/GitHub-Insights/issues" class="nav-link" target="_blank">
         <span class="material-icons">bug_report</span>
         Report Bug
       </a>
@@ -1032,19 +1128,19 @@ footer {
 <div class="container">
   <div class="tabs">
     <div class="tab active" onclick="switchTab('repos')">
-      <span class="material-icons animated-icon">folder</span>
+      <span class="material-icons">folder</span>
       Repositories
     </div>
     <div class="tab" onclick="switchTab('users')">
-      <span class="material-icons animated-icon">people</span>
+      <span class="material-icons">people</span>
       Users
     </div>
     <div class="tab" onclick="switchTab('gists')">
-      <span class="material-icons animated-icon">code</span>
+      <span class="material-icons">code</span>
       Gists
     </div>
     <div class="tab" onclick="switchTab('bookmarks')">
-      <span class="material-icons animated-icon">bookmarks</span>
+      <span class="material-icons">bookmarks</span>
       Bookmarks
     </div>
   </div>
@@ -1127,7 +1223,7 @@ footer {
     <div class="experiment">
       <div class="experiment-info">
         <div class="experiment-label">
-          <span class="material-icons">auto_awesome</span>
+          <span class="material-icons">animation</span>
           <span>Animated Cards</span>
         </div>
         <div class="experiment-description">Enable smooth animations for result cards</div>
@@ -1222,9 +1318,15 @@ footer {
     <a href="https://nexas-development.vercel.app/" target="_blank">Nexas Studios</a>
   </div>
   <div class="footer-links">
-    <a href="https://github.com/DaDevMikey/Github-Insights" target="_blank">
+    <a href="https://github.com/DaDevMikey/GitHub-Insights" target="_blank">
       <span class="material-icons">code</span>
       View Source Code
+    </a>
+  </div>
+    <div class="footer-links">
+    <a href="https://ko-fi.com/DaManMikey" target="_blank">
+      <span class="material-icons">volunteer_activism</span>
+      Donate
     </a>
   </div>
 </footer>
@@ -1232,374 +1334,258 @@ footer {
 <div id="notificationContainer"></div>
 
 <script>
-let currentTab = 'repos';
-let loading = false;
-let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
-
-function renderResults(items) {
-  const results = document.getElementById('results');
-  results.innerHTML = '';
-  
-  items.forEach(item => {
-    const isBookmarked = bookmarks.some(b => b.id === item.id);
-    const card = document.createElement('div');
-    card.className = 'result-card animate-in';
-    
-    if (item.type === 'User' || item.login) {
-      card.setAttribute('data-username', item.login);
-      const isCreator = ['Mikey', '155601-Mikey', 'DevMikey123'].includes(item.login);
-      card.innerHTML = `
-        <div class="result-header">
-          <img src="${item.avatar_url}" alt="${item.login}" class="avatar">
-          <div>
-            <h3>
-              <a href="${item.html_url}" target="_blank" rel="noopener">${item.login}</a>
-              ${isCreator ? '<span class="creator-badge"><span class="material-icons">verified</span>GitSights Creator</span>' : ''}
-            </h3>
-            <p>${item.bio || ''}</p>
-          </div>
-          <div class="card-actions">
-            <button class="share-btn" onclick="shareItem(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-              <span class="material-icons">share</span>
-            </button>
-            <button class="bookmark-btn" onclick="toggleBookmark(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-              <span class="material-icons">${isBookmarked ? 'bookmark' : 'bookmark_border'}</span>
-            </button>
-          </div>
-        </div>
-        <button class="expand-btn" onclick="expandUserDetails('${item.login}')">
-          <span class="material-icons">expand_more</span>
-          Toggle Details
-        </button>
-        <div class="user-details"></div>
-      `;
-    } else if (item.full_name) {
-      const isOfficial = item.html_url === 'https://github.com/155601-Mikey/GitHub-Insights';
-      card.innerHTML = `
-        <div class="result-header">
-          <div>
-            <h3>
-              <a href="${item.html_url}" target="_blank" rel="noopener">${item.full_name}</a>
-              ${isOfficial ? '<span class="creator-badge"><span class="material-icons">verified</span>Official Source Code</span>' : ''}
-            </h3>
-            <p>${item.description || 'No description available'}</p>
-            <div class="stats">
-              <span><span class="material-icons">star</span>${item.stargazers_count}</span>
-              <span class="stat-dot">•</span>
-              <span><span class="material-icons">fork_right</span>${item.forks_count}</span>
-              ${item.language ? `
-                <span class="stat-dot">•</span>
-                <span><span class="material-icons">code</span>${item.language}</span>
-              ` : ''}
-            </div>
-            <div class="action-buttons">
-              <a href="${item.html_url}" target="_blank" rel="noopener" class="action-link">
-                <span class="material-icons">code</span>View Source
-              </a>
-              ${item.homepage ? `
-                <a href="${item.homepage}" target="_blank" rel="noopener" class="action-link">
-                  <span class="material-icons">link</span>Visit Website
-                </a>
-              ` : ''}
-            </div>
-          </div>
-          <div class="card-actions">
-            <button class="share-btn" onclick="shareItem(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-              <span class="material-icons">share</span>
-            </button>
-            <button class="bookmark-btn" onclick="toggleBookmark(${JSON.stringify(item).replace(/"/g, '&quot;')})">
-              <span class="material-icons">${isBookmarked ? 'bookmark' : 'bookmark_border'}</span>
-            </button>
-          </div>
-        </div>
-      `;
-    }
-    
-    results.appendChild(card);
-  });
-}
-
 function showNotification(message, type = 'info') {
   const notification = document.createElement('div');
   notification.className = `notification ${type}`;
-  notification.innerHTML = `
-    <span class="material-icons">${type === 'error' ? 'error' : type === 'success' ? 'check_circle' : 'info'}</span>
-    ${message}
-  `;
+  notification.textContent = message;
+  
   document.getElementById('notificationContainer').appendChild(notification);
   
+  // Make notification visible
   setTimeout(() => {
     notification.style.opacity = '1';
-  }, 10);
-  
+  }, 100);
+
+  // Remove notification after delay
   setTimeout(() => {
     notification.style.opacity = '0';
     setTimeout(() => {
       notification.remove();
-    }, 500); 
+    }, 500);
   }, 3000);
 }
 
-async function shareItem(item) {
-  const url = item.html_url;
-  const title = item.full_name || item.login || 'Check this out on GitHub';
-  
-  const notification = document.createElement('div');
-  notification.className = 'notification share-popup';
-  notification.innerHTML = `
-    <div class="share-link">${url}</div>
-    <div class="share-actions">
-      <button onclick="copyLink('${url}')" class="share-action-btn">
-        <span class="material-icons">content_copy</span>
-        Copy Link
-      </button>
-      <button onclick="closeSharePopup(this)" class="share-action-btn">
-        <span class="material-icons">close</span>
-        Close
-      </button>
-    </div>
-  `;
-  
-  document.getElementById('notificationContainer').appendChild(notification);
-  setTimeout(() => notification.style.opacity = '1', 10);
+function renderResults(items) {
+  const results = document.getElementById('results');
+  results.innerHTML = items.map(item => {
+    const isBookmarked = bookmarks.some(b => b.id === item.id);
+    const bookmarkIcon = isBookmarked ? 'bookmark' : 'bookmark_border';
+    
+    if (currentTab === 'users') {
+      return `
+        <div class="result-card">
+          <div class="result-header">
+            <div>
+              <a href="${item.html_url}" target="_blank" rel="noopener">
+                <img src="${item.avatar_url}" alt="${item.login}" class="avatar">
+              </a>
+              <a href="${item.html_url}" target="_blank" rel="noopener">
+                ${item.login}
+              </a>
+              ${item.login === 'DaDevMikey' ? '<span class="creator-badge"><span class="material-icons">verified</span>Creator</span>' : ''}
+            </div>
+            <div class="card-actions">
+              <button class="share-btn" onclick="shareItem(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                <span class="material-icons">share</span>
+              </button>
+              <button class="bookmark-btn" onclick="toggleBookmark(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                <span class="material-icons">${bookmarkIcon}</span>
+              </button>
+            </div>
+          </div>
+          <button class="expand-btn" onclick="expandUserDetails('${item.login}')">
+            <span class="material-icons">expand_more</span>
+            View Details
+          </button>
+          <div class="user-details"></div>
+        </div>
+      `;
+    } else {
+      // Repository or Gist display
+      return `
+        <div class="result-card">
+          <div class="result-header">
+            <div>
+              <h3>
+                <a href="${item.html_url}" target="_blank" rel="noopener">
+                  ${item.full_name || item.name}
+                </a>
+              </h3>
+              <p>${item.description || 'No description available'}</p>
+            </div>
+            <div class="card-actions">
+              <button class="share-btn" onclick="shareItem(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                <span class="material-icons">share</span>
+              </button>
+              <button class="bookmark-btn" onclick="toggleBookmark(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                <span class="material-icons">${bookmarkIcon}</span>
+              </button>
+            </div>
+          </div>
+          <div class="stats">
+            <span><span class="material-icons">star</span>${item.stargazers_count || 0}</span>
+            <span class="stat-dot">•</span>
+            <span><span class="material-icons">fork_right</span>${item.forks_count || 0}</span>
+            <span class="stat-dot">•</span>
+            <span><span class="material-icons">visibility</span>${item.watchers_count || 0}</span>
+            ${item.language ? `
+              <span class="stat-dot">•</span>
+              <span><span class="material-icons">code</span>${item.language}</span>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+  }).join('');
 }
 
-function copyLink(url) {
-  navigator.clipboard.writeText(url)
-    .then(() => {
-      showNotification('Link copied to clipboard!', 'success');
-      closeSharePopup(document.querySelector('.share-popup'));
-    })
-    .catch(() => showNotification('Failed to copy link', 'error'));
-}
+let currentTab = 'repos';
+let loading = false;
+let bookmarks = JSON.parse(localStorage.getItem('bookmarks') || '[]');
 
-function closeSharePopup(element) {
-  const popup = element.closest('.share-popup');
-  popup.style.opacity = '0';
-  setTimeout(() => popup.remove(), 300);
-}
-
-function toggleTheme() {
-  const body = document.body;
-  const currentTheme = body.getAttribute('data-theme');
-  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-  body.setAttribute('data-theme', newTheme);
-  localStorage.setItem('theme', newTheme);
-  
-  const themeIcon = document.querySelector('.theme-toggle .material-icons');
-  themeIcon.textContent = newTheme === 'dark' ? 'light_mode' : 'dark_mode';
-  
-  document.body.offsetHeight;
-}
-
-function toggleSettings() {
-  const menu = document.querySelector('.settings-menu');
-  const overlay = document.querySelector('.settings-overlay');
-  
-  if (menu.classList.contains('open')) {
-    menu.style.right = '-450px';
-    menu.classList.remove('open');
-    overlay.classList.remove('open');
-  } else {
-    menu.style.right = '0';
-    menu.classList.add('open');
-    overlay.classList.add('open');
+document.getElementById('searchInput').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    search();
   }
-}
-
-function updateTheme() {
-  const select = document.getElementById('themeSelect');
-  const theme = select.value;
-
-  if (theme === 'system') {
-    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    document.body.setAttribute('data-theme', systemTheme);
-  } else {
-    document.body.setAttribute('data-theme', theme);
-  }
-  
-  localStorage.setItem('theme-preference', theme);
-}
+});
 
 function switchTab(tab) {
   currentTab = tab;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   
-  const tabElement = document.querySelector(`.tab:nth-child(${
-    tab === 'repos' ? 1 : 
-    tab === 'users' ? 2 : 
-    tab === 'gists' ? 3 : 
-    tab === 'bookmarks' ? 4 : 
-    1 
-  })`);
-  
-  if (tabElement) {
-    tabElement.classList.add('active');
-  }
-  
-  document.getElementById('repoFilters').style.display = tab === 'repos' ? 'flex' : 'none';
-  
-  const resultsDiv = document.getElementById('results');
-  resultsDiv.style.opacity = '0';
-  
-  setTimeout(() => {
-    resultsDiv.innerHTML = '';
-    resultsDiv.classList.add('tab-content');
-    resultsDiv.style.opacity = '1';
-    
-    const input = document.getElementById('searchInput');
-    input.placeholder = getPlaceholderText(tab);
-    
-    if (tab === 'bookmarks') {
-      showBookmarks();
-    } else if (input.value) {
-      search(); 
+  // Update active tab styling
+  document.querySelectorAll('.tab').forEach(t => {
+    if (t.textContent.toLowerCase().includes(tab)) {
+      t.classList.add('active');
+    } else {
+      t.classList.remove('active');
     }
-  }, 300);
-}
+  });
 
-function getPlaceholderText(tab) {
-  switch(tab) {
-    case 'bookmarks':
-      return 'Search bookmarked items...';
-    case 'repos':
-      return 'Search repositories...';
-    case 'users':
-      return 'Search users...';
-    case 'gists':
-      return 'Search gists...';
-    default:
-      return 'Search GitHub...';
+  // Show/hide relevant filters
+  const filters = document.getElementById('repoFilters');
+  filters.style.display = tab === 'repos' ? 'flex' : 'none';
+
+  // Clear results
+  const results = document.getElementById('results');
+  results.innerHTML = '';
+
+  // If bookmarks tab, show bookmarks immediately
+  if (tab === 'bookmarks') {
+    showBookmarks();
+  } else {
+    // If there's a search term, perform search with new tab
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput.value.trim()) {
+      search();
+    }
   }
 }
 
-function clearSearch() {
-  const input = document.getElementById('searchInput');
-  input.value = '';
-  input.focus();
-  document.querySelector('.clear-search').classList.remove('visible');
+function highlightKeywords(query) {
+  if (!document.getElementById('keywordHighlight').checked) return;
+  
+  const results = document.getElementById('results');
+  const words = query.toLowerCase().split(/\s+/);
+  
+  // Get all text nodes in the results
+  const walk = document.createTreeWalker(
+    results,
+    NodeFilter.SHOW_TEXT,
+    null,
+    false
+  );
+
+  const nodesToHighlight = [];
+  let node;
+  while (node = walk.nextNode()) {
+    // Skip if parent is already a highlight or is a code element
+    if (node.parentNode.classList?.contains('highlight') || 
+        node.parentNode.tagName === 'CODE') {
+      continue;
+    }
+
+    const text = node.textContent.toLowerCase();
+    let shouldHighlight = false;
+    
+    // Check if any search word matches exactly
+    for (const word of words) {
+      if (text.includes(word)) {
+        shouldHighlight = true;
+        break;
+      }
+    }
+
+    if (shouldHighlight) {
+      nodesToHighlight.push(node);
+    }
+  }
+
+  // Replace text with highlighted version
+  for (const node of nodesToHighlight) {
+    const span = document.createElement('span');
+    span.className = 'highlight';
+    span.textContent = node.textContent;
+    node.parentNode.replaceChild(span, node);
+  }
 }
 
+// Add showBookmarks function that uses renderResults instead of showResults
+function showBookmarks() {
+  const results = document.getElementById('results');
+  if (bookmarks.length === 0) {
+    results.innerHTML = '<div class="loading">No bookmarks yet</div>';
+    return;
+  }
+  renderResults(bookmarks);
+  // Highlight keywords if there's an active search
+  const searchTerm = document.getElementById('searchInput').value.trim();
+  if (searchTerm) {
+    highlightKeywords(searchTerm);
+  }
+}
+
+// Add toggleBookmark function
 function toggleBookmark(item) {
   const index = bookmarks.findIndex(b => b.id === item.id);
   if (index === -1) {
     bookmarks.push(item);
+    showNotification('Added to bookmarks', 'success');
   } else {
     bookmarks.splice(index, 1);
+    showNotification('Removed from bookmarks', 'info');
   }
   localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
-  renderResults(currentTab === 'bookmarks' ? bookmarks : [item]);
-}
-
-function showBookmarks() {
-  const results = document.getElementById('results');
-  const searchQuery = document.getElementById('searchInput').value.toLowerCase();
   
-  let filteredBookmarks = bookmarks;
-  if (searchQuery) {
-    filteredBookmarks = bookmarks.filter(item => {
-      const searchableText = [
-        item.full_name,
-        item.description,
-        item.language,
-        item.login,
-        item.bio
-      ].filter(Boolean).join(' ').toLowerCase();
-      
-      return searchQuery.split(' ').every(term => 
-        searchableText.includes(term.toLowerCase())
-      );
-    });
-  }
-  
-  if (filteredBookmarks.length === 0) {
-    results.innerHTML = '<div class="loading">No bookmarks found</div>';
-    return;
-  }
-  
-  renderResults(filteredBookmarks);
-  
-  if (document.getElementById('keywordHighlight')?.checked) {
-    highlightKeywords(searchQuery);
-  }
-}
-
-async function expandUserDetails(username) {
-  const userCard = document.querySelector(`[data-username="${username}"]`);
-  const detailsSection = userCard.querySelector('.user-details');
-  
-  if (!detailsSection.classList.contains('expanded')) {
-    try {
-      detailsSection.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>Loading profile...</p></div>';
-      detailsSection.classList.add('expanded');
-
-      const [userDetails, repos] = await Promise.all([
-        fetch(`https://api.github.com/users/${username}`).then(r => r.json()),
-        fetch(`https://api.github.com/users/${username}/repos?sort=stars&per_page=5`).then(r => r.json())
-      ]);
-
-      detailsSection.innerHTML = `
-        <div class="user-profile-details">
-          <div class="user-stats">
-            <div class="stat-item">
-              <span class="material-icons">people</span>
-              ${userDetails.followers} followers
-            </div>
-            <span class="stat-dot">•</span>
-            <div class="stat-item">
-              <span class="material-icons">person_add</span>
-              ${userDetails.following} following
-            </div>
-            <span class="stat-dot">•</span>
-            <div class="stat-item">
-              <span class="material-icons">code</span>
-              ${userDetails.public_repos} repositories
-            </div>
-          </div>
-          
-          <div class="user-badges">
-            ${userDetails.site_admin ? '<span class="badge admin">Admin</span>' : ''}
-            ${userDetails.hireable ? '<span class="badge hireable">Open to Work</span>' : ''}
-            ${userDetails.bio ? `<div class="bio">${userDetails.bio}</div>` : ''}
-          </div>
-
-          <h3>Top Repositories</h3>
-          <div class="user-repos">
-            ${repos.map(repo => `
-              <div class="result-card animate-in">
-                <h4><a href="${repo.html_url}" target="_blank" rel="noopener">${repo.name}</a></h4>
-                <p>${repo.description || 'No description available'}</p>
-                <div class="stats">
-                  <span><span class="material-icons">star</span>${repo.stargazers_count}</span>
-                  <span class="stat-dot">•</span>
-                  <span><span class="material-icons">fork_right</span>${repo.forks_count}</span>
-                  ${repo.language ? `
-                    <span class="stat-dot">•</span>
-                    <span><span class="material-icons">code</span>${repo.language}</span>
-                  ` : ''}
-                </div>
-                <div class="action-buttons">
-                  <a href="${repo.html_url}" target="_blank" rel="noopener" class="action-link">
-                    <span class="material-icons">code</span>View Source
-                  </a>
-                  ${repo.homepage ? `
-                    <a href="${repo.homepage}" target="_blank" rel="noopener" class="action-link">
-                      <span class="material-icons">link</span>Visit Website
-                    </a>
-                  ` : ''}
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    } catch (error) {
-      console.error('Error loading user details:', error);
-      detailsSection.innerHTML = '<div class="error">Error loading user details. Please try again.</div>';
-    }
+  // Re-render current view
+  if (currentTab === 'bookmarks') {
+    showBookmarks();
   } else {
-    detailsSection.classList.remove('expanded');
+    // Re-render search results
+    search();
   }
+}
+
+// Add shareItem function
+function shareItem(item) {
+  const shareUrl = item.html_url;
+  const sharePopup = document.createElement('div');
+  sharePopup.className = 'share-popup';
+  sharePopup.innerHTML = `
+    <span class="share-link">${shareUrl}</span>
+    <div class="share-actions">
+      <button class="share-action-btn" onclick="copyToClipboard('${shareUrl}')">
+        <span class="material-icons">content_copy</span>
+      </button>
+      <button class="share-action-btn" onclick="this.closest('.share-popup').remove()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+  `;
+  document.body.appendChild(sharePopup);
+  
+  setTimeout(() => {
+    sharePopup.style.opacity = '1';
+  }, 100);
+}
+
+// Add copyToClipboard function
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    showNotification('Link copied to clipboard', 'success');
+  }).catch(err => {
+    showNotification('Failed to copy link', 'error');
+    console.error('Failed to copy:', err);
+  });
 }
 
 async function search() {
@@ -1638,7 +1624,7 @@ async function search() {
         endpoint = `https://api.github.com/search/users?q=${encodeURIComponent(query)}`;
         break;
       case 'gists':
-        endpoint = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}+fork:true+filename:gist`;
+        endpoint = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}+fork:true+language:text`;
         break;
     }
 
@@ -1652,6 +1638,7 @@ async function search() {
     
     if (items.length > 0) {
       renderResults(items);
+      highlightKeywords(query); // Highlight keywords after rendering results
     } else {
       results.innerHTML = '<div class="loading">No results found</div>';
     }
@@ -1665,124 +1652,112 @@ async function search() {
   }
 }
 
-function showBetaPopup() {
-  const popup = document.createElement('div');
-  popup.className = 'beta-popup';
-  popup.innerHTML = `
-    <h2>
-      <span class="material-icons">science</span>
-      Experimental Feature
-    </h2>
-    <p>The "All Search" feature lets you search across repositories, users, and gists simultaneously. This feature is currently in beta testing and may:</p>
-    <ul>
-      <li>Take longer to load results</li>
-      <li>Sometimes return unexpected results</li>
-      <li>Hit API rate limits more quickly</li>
-    </ul>
-    <p>Your feedback helps us improve! Please report any issues you find.</p>
-    <div class="action-buttons">
-      <a href="https://github.com/155601-Mikey/GBW-GitBoard-Web-/issues" target="_blank" class="action-link">
-        <span class="material-icons">bug_report</span>
-        Report Issues
-      </a>
-      <button onclick="dismissBetaPopup()" class="action-link">
-        <span class="material-icons">check</span>
-        Got it
-      </button>
-    </div>
-  `;
-  document.body.appendChild(popup);
+function clearSearch() {
+  const input = document.getElementById('searchInput');
+  input.value = '';
+  input.focus();
+  document.getElementById('results').innerHTML = '';
+  document.querySelector('.clear-search').classList.remove('visible');
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+async function expandUserDetails(username) {
+  try {
+    const userCard = document.querySelector(`.result-card a[href*="/${username}"]`).closest('.result-card');
+    const detailsSection = userCard.querySelector('.user-details');
+    const expandBtn = userCard.querySelector('.expand-btn');
+    
+    if (!detailsSection.classList.contains('expanded')) {
+      detailsSection.innerHTML = '<div class="loading"><div class="loading-spinner"></div><p>Loading profile...</p></div>';
+      detailsSection.classList.add('expanded');
+      expandBtn.querySelector('.material-icons').textContent = 'expand_less';
+
+      const [userDetails, repos] = await Promise.all([
+        fetch(`https://api.github.com/users/${username}`).then(r => r.json()),
+        fetch(`https://api.github.com/users/${username}/repos?sort=stars&per_page=5`).then(r => r.json())
+      ]);
+
+      detailsSection.innerHTML = `
+        <div class="user-profile-details">
+          <div class="user-stats">
+            <div class="stat-item">
+              <span class="material-icons">people</span>
+              ${userDetails.followers} followers
+            </div>
+            <span class="stat-dot">•</span>
+            <div class="stat-item">
+              <span class="material-icons">person_add</span>
+              ${userDetails.following} following
+            </div>
+            <span class="stat-dot">•</span>
+            <div class="stat-item">
+              <span class="material-icons">visibility</span>
+              ${userDetails.public_gists} gists
+            </div>
+          </div>
+          
+          <div class="user-badges">
+            ${userDetails.site_admin ? '<span class="badge admin">Admin</span>' : ''}
+            ${userDetails.hireable ? '<span class="badge hireable">Open to Work</span>' : ''}
+            ${userDetails.bio ? `<div class="bio">${userDetails.bio}</div>` : ''}
+          </div>
+          
+          <h3>Top Repositories</h3>
+          <div class="user-repos">
+            ${repos.map(repo => `
+              <div class="repo-item">
+                <h4><a href="${repo.html_url}" target="_blank" rel="noopener">${repo.name}</a></h4>
+                <p>${repo.description || 'No description available'}</p>
+                <div class="stats">
+                  <span><span class="material-icons">star</span>${repo.stargazers_count}</span>
+                  <span class="stat-dot">•</span>
+                  <span><span class="material-icons">fork_right</span>${repo.forks_count}</span>
+                  <span class="stat-dot">•</span>
+                  <span><span class="material-icons">visibility</span>${repo.watchers_count}</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    } else {
+      detailsSection.classList.remove('expanded');
+      expandBtn.querySelector('.material-icons').textContent = 'expand_more';
+    }
+  } catch (error) {
+    console.error('Error expanding user details:', error);
+    showNotification('Error loading user details', 'error');
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+}
+
+function toggleSettings() {
   const settingsMenu = document.querySelector('.settings-menu');
-  let touchStartX = 0;
+  const overlay = document.querySelector('.settings-overlay');
   
-  settingsMenu.addEventListener('touchstart', (e) => {
-    touchStartX = e.touches[0].clientX;
-  });
-  
-  settingsMenu.addEventListener('touchmove', (e) => {
-    const touchEndX = e.touches[0].clientX;
-    const diff = touchStartX - touchEndX;
-    
-    if (diff > 50) { // Swipe left
-      toggleSettings();
-    }
-  });
-  
-  let lastTap = 0;
-  document.addEventListener('touchend', (e) => {
-    const now = Date.now();
-    const DOUBLE_TAP_DELAY = 300;
-    
-    if (now - lastTap < DOUBLE_TAP_DELAY) {
-      e.preventDefault();
-    }
-    
-    lastTap = now;
-  }, false);
-
-  document.getElementById('searchInput').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-      search();
-    }
-  });
-
-  const experimentSettings = JSON.parse(localStorage.getItem('experimentSettings') || '{}');
-  Object.keys(experimentSettings).forEach(id => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.checked = experimentSettings[id];
-      if (id === 'performanceMode' && experimentSettings[id]) {
-        document.body.classList.add('performance-mode');
-      }
-    }
-  });
-});
-
-// Initialize
-document.getElementById('repoFilters').style.display = 'flex';
-const savedTheme = localStorage.getItem('theme') || 'light';
-document.body.setAttribute('data-theme', savedTheme);
-const themeIcon = document.querySelector('.theme-toggle .material-icons');
-themeIcon.textContent = savedTheme === 'dark' ? 'light_mode' : 'dark_mode';
+  if (settingsMenu.classList.contains('open')) {
+    settingsMenu.classList.remove('open');
+    overlay.classList.remove('open');
+  } else {
+    settingsMenu.classList.add('open');
+    overlay.classList.add('open'); 
+  }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-  initializeTheme();
-  
-  document.querySelectorAll('.experiment input[type="checkbox"]').forEach(toggle => {
-    toggle.addEventListener('change', (e) => {
-      toggleExperiment(e.target.id);
-    });
-  });
+  initTheme();
 });
-
-function initializeTheme() {
-  const savedPreference = localStorage.getItem('theme-preference') || 'system';
-  document.getElementById('themeSelect').value = savedPreference;
-  updateTheme();
-  
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateTheme);
-}
-
-function dismissBetaPopup() {
-  const popup = document.querySelector('.beta-popup');
-  if (popup) {
-    popup.style.opacity = '0';
-    setTimeout(() => popup.remove(), 300);
-    localStorage.setItem('beta-popup-dismissed', 'true');
-  }
-}
-
-function toggleExperiment(experimentId) {
-  const settings = JSON.parse(localStorage.getItem('experimentSettings') || '{}');
-  settings[experimentId] = document.getElementById(experimentId).checked;
-  localStorage.setItem('experimentSettings', JSON.stringify(settings));
-  
-  if (experimentId === 'performanceMode') {
-    document.body.classList.toggle('performance-mode', settings[experimentId]);
-  }
-}
 </script>
 </body></html>
